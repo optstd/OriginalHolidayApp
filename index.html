@@ -75,7 +75,6 @@
                 <span id="holidayCount" class="text-xs bg-amber-200 text-amber-800 px-2 py-1 rounded-full">0件</span>
             </h3>
             <div id="holidayList" class="grid grid-cols-1 md:grid-cols-2 gap-4">
-                <!-- ここに投稿データが動的に挿入されます -->
                 <div class="col-span-full text-center py-12 text-slate-400 text-sm">祝日データを読み込み中...</div>
             </div>
         </section>
@@ -83,19 +82,26 @@
     </main>
 
     <script>
-        // --- 1. Supabaseの初期化設定 ---
-        // ※この後のVercel設定画面で環境変数としてセットします
-        const SUPABASE_URL = window.env?.SUPABASE_URL || 'YOUR_SUPABASE_URL';
-        const SUPABASE_KEY = window.env?.SUPABASE_KEY || 'YOUR_SUPABASE_KEY';
-        
+        // Vercel等から動的に注入される環境変数またはフォールバック
+        const SUPABASE_URL = "<!--ENV_SUPABASE_URL-->";
+        const SUPABASE_KEY = "<!--ENV_SUPABASE_KEY-->";
+
+        // 直接入力フォールバック（環境変数が空の場合の安全策）
+        const url = (SUPABASE_URL && !SUPABASE_URL.startsWith('<!--')) ? SUPABASE_URL : window.env_supabase_url;
+        const key = (SUPABASE_KEY && !SUPABASE_KEY.startsWith('<!--')) ? SUPABASE_KEY : window.env_supabase_key;
+
         let db;
         try {
-            db = supabase.createClient(SUPABASE_URL, SUPABASE_KEY);
+            if (typeof supabase !== 'undefined') {
+                db = supabase.createClient(
+                    url || 'YOUR_URL_HERE', 
+                    key || 'YOUR_KEY_HERE'
+                );
+            }
         } catch(e) {
             console.error('Supabase Init Error', e);
         }
 
-        // 変数・エレメント取得
         const holidayForm = document.getElementById('holidayForm');
         const titleInput = document.getElementById('titleInput');
         const reasonInput = document.getElementById('reasonInput');
@@ -104,23 +110,25 @@
         const holidayList = document.getElementById('holidayList');
         const holidayCount = document.getElementById('holidayCount');
 
-        // --- 2. NGワード取得 ＆ チェック処理 ---
         async function checkNgWords(text) {
-            if(!text) return false;
-            const { data: ngWords } = await db.from('ng_words').select('word');
-            if (!ngWords) return false;
-            
-            for (let item of ngWords) {
-                if (text.includes(item.word)) {
-                    return item.word; // 該当したNGワードを返す
+            if(!text || !db) return false;
+            try {
+                const { data: ngWords } = await db.from('ng_words').select('word');
+                if (!ngWords) return false;
+                for (let item of ngWords) {
+                    if (text.includes(item.word)) return item.word;
                 }
+            } catch(e) {
+                console.error(e);
             }
             return false;
         }
 
-        // --- 3. 祝日一覧の読み込み（status = 'active' のみ表示） ---
         async function fetchHolidays() {
-            if (!db) return;
+            if (!db) {
+                holidayList.innerHTML = '<div class="col-span-full text-center text-amber-700 py-4">データベース設定を準備中です（鍵の設定をご確認ください）</div>';
+                return;
+            }
             const { data, error } = await db
                 .from('holidays')
                 .select('*')
@@ -164,7 +172,6 @@
             `).join('');
         }
 
-        // --- 4. 新しい祝日の投稿処理 ---
         holidayForm.addEventListener('submit', async (e) => {
             e.preventDefault();
             errorMessage.classList.add('hidden');
@@ -173,7 +180,11 @@
             const reason = reasonInput.value.trim();
             const category = categoryInput.value;
 
-            // NGワード自動判定
+            if(!db) {
+                alert('データベースが接続されていません。');
+                return;
+            }
+
             const hitNgTitle = await checkNgWords(title);
             const hitNgReason = await checkNgWords(reason);
 
@@ -183,28 +194,25 @@
                 return;
             }
 
-            // DBへ追加
             const { error } = await db.from('holidays').insert([
                 { title, reason, category }
             ]);
 
             if (error) {
-                alert('投稿に失敗しました');
+                alert('投稿に失敗しました: ' + error.message);
                 console.error(error);
             } else {
                 titleInput.value = '';
                 reasonInput.value = '';
-                fetchHolidays(); // 再読み込み
+                fetchHolidays();
             }
         });
 
-        // --- 5. イイね（共感）ボタン処理 ---
         async function likeHoliday(id, currentLikes) {
             await db.from('holidays').update({ like_count: currentLikes + 1 }).eq('id', id);
             fetchHolidays();
         }
 
-        // --- 6. 通報ボタン処理（3回で自動非表示はSupabase側で発動） ---
         async function reportHoliday(id, currentReports) {
             if(!confirm('この投稿を通報しますか？（複数回の通報で自動非表示となります）')) return;
             await db.from('holidays').update({ report_count: currentReports + 1 }).eq('id', id);
@@ -212,13 +220,11 @@
             fetchHolidays();
         }
 
-        // エスケープ処理（セキュリティ対策）
         function escapeHtml(str) {
             if(!str) return '';
             return str.replace(/[&< me"']/g, (m) => ({ '&': '&amp;', '<': '&lt;', '>': '&gt;', '"': '&quot;', "'": '&#039;' })[m]);
         }
 
-        // 初期読み込み実行
         window.addEventListener('DOMContentLoaded', fetchHolidays);
     </script>
 </body>
