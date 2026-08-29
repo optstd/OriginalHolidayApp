@@ -1,384 +1,397 @@
 <!DOCTYPE html>
 <html lang="ja">
 <head>
-    <meta charset="UTF-8">
-    <meta name="viewport" content="width=device-width, initial-scale=1.0">
-    <title>みんなの祝日図鑑 - 有休・お休みアイデア共有</title>
-    <script src="https://cdn.tailwindcss.com"></script>
-    <script src="https://cdn.jsdelivr.net/npm/@supabase/supabase-js@2"></script>
+  <meta charset="UTF-8">
+  <meta name="viewport" content="width=device-width, initial-scale=1.0">
+  <title>みんなの祝日カレンダー</title>
+  
+  <!-- Tailwind CSS -->
+  <script src="https://cdn.tailwindcss.com"></script>
+  <!-- FullCalendar -->
+  <script src="https://cdn.jsdelivr.net/npm/fullcalendar@6.1.10/index.global.min.js"></script>
+  <!-- Supabase JS -->
+  <script src="https://cdn.jsdelivr.net/npm/@supabase/supabase-js@2"></script>
 </head>
-<body class="bg-amber-50 min-h-screen text-slate-800 font-sans flex flex-col justify-between">
+<body class="bg-slate-50 text-slate-800 min-h-screen pb-12">
 
-    <div>
-        <header class="bg-amber-500 text-white shadow-md p-4 sticky top-0 z-10">
-            <div class="max-w-4xl mx-auto flex justify-between items-center">
-                <h1 class="text-xl md:text-2xl font-bold flex items-center gap-2">
-                    <span>🎉</span> みんなの祝日図鑑
-                </h1>
-                <span class="text-xs md:text-sm bg-amber-600 px-3 py-1 rounded-full">有休取得推進プロジェクト</span>
-            </div>
-        </header>
-
-        <main class="max-w-4xl mx-auto p-4 space-y-6">
-
-            <section class="bg-white p-6 rounded-2xl shadow-sm border border-amber-100">
-                <h2 class="text-lg font-bold text-amber-700 mb-2">休む理由を「オリジナルの祝日」にしよう！</h2>
-                <p class="text-sm text-slate-600 leading-relaxed">
-                    「平日だけど〇〇だから休む！」という個人的な理由を祝日として投稿し、みんなで祝い合う場所です。
-                    素敵な祝日を見つけたら「その祝日イイね！」を押して、自分の有休の参考にしましょう！
-                </p>
-            </section>
-
-            <!-- 投稿フォーム -->
-            <section class="bg-white p-6 rounded-2xl shadow-sm border border-amber-200">
-                <h3 class="text-md font-bold mb-4 flex items-center gap-2">
-                    <span>✍️</span> 新しい「祝日」を制定する
-                </h3>
-                <form id="holidayForm" class="space-y-4">
-                    <div class="grid grid-cols-1 md:grid-cols-3 gap-4">
-                        <div class="md:col-span-2">
-                            <label class="block text-xs font-bold text-slate-600 mb-1">祝日の名前 <span class="text-red-500">*</span></label>
-                            <input type="text" id="titleInput" required placeholder="例：愛車で紅葉ドライブ感謝の日 / 新作映画公開初日記念日" 
-                                   class="w-full p-3 border border-slate-300 rounded-lg text-sm focus:ring-2 focus:ring-amber-400 focus:outline-none">
-                        </div>
-                        <div>
-                            <label class="block text-xs font-bold text-slate-600 mb-1">ニックネーム（任意）</label>
-                            <input type="text" id="nicknameInput" placeholder="例：名無しの休日びと" 
-                                   class="w-full p-3 border border-slate-300 rounded-lg text-sm focus:ring-2 focus:ring-amber-400 focus:outline-none">
-                        </div>
-                    </div>
-                    <div class="grid grid-cols-1 md:grid-cols-2 gap-4">
-                        <div>
-                            <label class="block text-xs font-bold text-slate-600 mb-1">カテゴリ</label>
-                            <select id="categoryInput" class="w-full p-3 border border-slate-300 rounded-lg text-sm bg-white">
-                                <option value="ドライブ・おでかけ">🚗 ドライブ・おでかけ</option>
-                                <option value="映画・エンタメ">🎬 映画・エンタメ</option>
-                                <option value="リフレッシュ・睡眠">♨️ リフレッシュ・睡眠</option>
-                                <option value="グルメ・カフェ">☕ グルメ・カフェ</option>
-                                <option value="家族・イベント">👨‍👩‍👧 家族・イベント</option>
-                                <option value="その他">✨ その他</option>
-                            </select>
-                        </div>
-                        <div>
-                            <label class="block text-xs font-bold text-slate-600 mb-1">休む理由・過ごし方の詳細（任意）</label>
-                            <input type="text" id="reasonInput" placeholder="例：混雑を避けて平日にのんびりドライブに行きます！" 
-                                   class="w-full p-3 border border-slate-300 rounded-lg text-sm focus:ring-2 focus:ring-amber-400 focus:outline-none">
-                        </div>
-                    </div>
-                    <div id="errorMessage" class="text-red-500 text-xs font-bold hidden"></div>
-                    <button type="submit" id="submitBtn" class="w-full bg-amber-500 hover:bg-amber-600 text-white font-bold py-3 rounded-lg text-sm transition shadow-sm">
-                        祝日をみんなにシェアする 🎉
-                    </button>
-                </form>
-            </section>
-
-            <!-- カレンダー表示セクション -->
-            <section class="bg-white p-6 rounded-2xl shadow-sm border border-slate-200 space-y-4">
-                <div class="flex justify-between items-center">
-                    <h3 class="text-md font-bold text-slate-800 flex items-center gap-2">
-                        <span>📅</span> 祝日カレンダー
-                    </h3>
-                    <div class="flex items-center gap-2">
-                        <button onclick="changeMonth(-1)" class="px-3 py-1 bg-slate-100 hover:bg-slate-200 rounded text-xs font-bold">← 前月</button>
-                        <span id="calendarMonthLabel" class="text-sm font-bold text-slate-700"></span>
-                        <button onclick="changeMonth(1)" class="px-3 py-1 bg-slate-100 hover:bg-slate-200 rounded text-xs font-bold">次月 →</button>
-                    </div>
-                </div>
-
-                <div class="grid grid-cols-7 gap-1 text-center text-xs font-bold border-b pb-2">
-                    <span class="text-red-500">日</span>
-                    <span>月</span>
-                    <span>火</span>
-                    <span>水</span>
-                    <span>木</span>
-                    <span>金</span>
-                    <span class="text-blue-500">土</span>
-                </div>
-                <div id="calendarGrid" class="grid grid-cols-7 gap-1 text-xs">
-                    <!-- カレンダーの日付セルがJavaScriptで動的生成されます -->
-                </div>
-                
-                <div class="flex items-center gap-4 text-[11px] text-slate-500 pt-2 border-t">
-                    <span class="flex items-center gap-1"><span class="w-2.5 h-2.5 bg-red-100 border border-red-300 rounded-full inline-block"></span> 日本の祝日</span>
-                    <span class="flex items-center gap-1"><span class="w-2.5 h-2.5 bg-amber-100 border border-amber-300 rounded-full inline-block"></span> オリジナル祝日</span>
-                </div>
-            </section>
-
-            <!-- 祝日一覧 -->
-            <section class="space-y-4">
-                <h3 class="text-md font-bold text-slate-700 flex items-center justify-between">
-                    <span>💬 みんなが作った祝日一覧</span>
-                    <span id="holidayCount" class="text-xs bg-amber-200 text-amber-800 px-2 py-1 rounded-full">0件</span>
-                </h3>
-                <div id="holidayList" class="grid grid-cols-1 md:grid-cols-2 gap-4">
-                    <div class="col-span-full text-center py-12 text-slate-400 text-sm">祝日データを読み込み中...</div>
-                </div>
-            </section>
-
-            <!-- SNSシェアセクション -->
-            <section class="bg-amber-100/60 p-6 rounded-2xl text-center space-y-3">
-                <h4 class="text-xs font-bold text-amber-900">＼ みんなの祝日図鑑を友達やSNSに広めよう！ ／</h4>
-                <div class="flex justify-center items-center gap-3">
-                    <button onclick="shareOnX()" class="bg-black text-white px-4 py-2 rounded-full text-xs font-bold hover:bg-slate-800 transition flex items-center gap-1">
-                        <span>𝕏</span> Xでシェア
-                    </button>
-                    <button onclick="shareOnLINE()" class="bg-[#06C755] text-white px-4 py-2 rounded-full text-xs font-bold hover:opacity-90 transition flex items-center gap-1">
-                        <span>💬</span> LINEで送る
-                    </button>
-                    <button onclick="copyLink()" class="bg-white text-slate-700 border border-slate-300 px-4 py-2 rounded-full text-xs font-bold hover:bg-slate-50 transition">
-                        🔗 リンクをコピー
-                    </button>
-                </div>
-            </section>
-
-        </main>
+  <!-- ヘッダー -->
+  <header class="bg-indigo-600 text-white shadow-md mb-6">
+    <div class="max-w-5xl mx-auto px-4 py-4 flex justify-between items-center">
+      <h1 class="text-2xl font-bold tracking-wide">🎉 みんなの祝日カレンダー</h1>
+      <button id="openFormBtn" class="bg-amber-400 hover:bg-amber-300 text-slate-900 font-bold px-4 py-2 rounded-lg shadow transition transform active:scale-95">
+        ＋ 自分の祝日を登録する
+      </button>
     </div>
+  </header>
 
-    <!-- コピーライト -->
-    <footer class="bg-slate-800 text-slate-400 text-xs text-center py-6 mt-12">
-        <p>&copy; 2026 OPTSTD All rights reserved.</p>
-    </footer>
+  <!-- メインコンテンツ -->
+  <main class="max-w-5xl mx-auto px-4">
+    <div class="bg-white p-4 md:p-6 rounded-xl shadow-sm border border-slate-200">
+      <div id="calendar"></div>
+    </div>
+  </main>
 
-    <script>
-        // ★以下のダブルクォーテーション内をご自身のSupabase情報に書き換えてください★
-        const SUPABASE_URL = "https://mcukrfldkrublakqshmf.supabase.co";
-        const SUPABASE_KEY = "sb_publishable_eoyKMMNR8yWeXmqeLu8yFQ_aU1k585n";
+  <!-- 投稿モーダル -->
+  <div id="formModal" class="fixed inset-0 bg-slate-900/60 backdrop-blur-sm flex items-center justify-center p-4 hidden z-50">
+    <div class="bg-white rounded-2xl shadow-xl w-full max-w-md p-6 relative">
+      <button id="closeFormBtn" class="absolute top-4 right-4 text-slate-400 hover:text-slate-600 text-xl font-bold">✕</button>
+      
+      <!-- フォーム画面 -->
+      <div id="modalFormStep">
+        <h2 class="text-xl font-bold text-slate-800 mb-4">新しい祝日を作る</h2>
+        <form id="holidayForm" class="space-y-4">
+          <div>
+            <label class="block text-sm font-medium text-slate-700 mb-1">祝日の日付</label>
+            <input type="date" id="holidayDate" required class="w-full border border-slate-300 rounded-lg px-3 py-2 focus:ring-2 focus:ring-indigo-500 focus:outline-none">
+          </div>
 
-        let db;
-        try {
-            db = supabase.createClient(SUPABASE_URL, SUPABASE_KEY);
-        } catch(e) {
-            console.error('Supabase Init Error', e);
+          <div>
+            <label class="block text-sm font-medium text-slate-700 mb-1">祝日名 <span class="text-xs text-rose-500">(必須)</span></label>
+            <input type="text" id="holidayTitle" placeholder="例: 自分を徹底的に甘やかす日" required class="w-full border border-slate-300 rounded-lg px-3 py-2 focus:ring-2 focus:ring-indigo-500 focus:outline-none">
+          </div>
+
+          <div>
+            <label class="block text-sm font-medium text-slate-700 mb-1">休む理由・過ごし方</label>
+            <textarea id="holidayReason" rows="3" placeholder="例: 朝から好きな映画を見てピザを食べるため。" class="w-full border border-slate-300 rounded-lg px-3 py-2 focus:ring-2 focus:ring-indigo-500 focus:outline-none"></textarea>
+          </div>
+
+          <div>
+            <label class="block text-sm font-medium text-slate-700 mb-1">カテゴリ</label>
+            <select id="holidayCategory" class="w-full border border-slate-300 rounded-lg px-3 py-2 focus:ring-2 focus:ring-indigo-500 focus:outline-none">
+              <option value="リフレッシュ">リフレッシュ</option>
+              <option value="ご褒美">ご褒美</option>
+              <option value="趣味・推し活">趣味・推し活</option>
+              <option value="体調管理">体調管理</option>
+              <option value="その他" selected>その他</option>
+            </select>
+          </div>
+
+          <button type="submit" id="submitBtn" class="w-full bg-indigo-600 hover:bg-indigo-700 text-white font-bold py-3 rounded-lg shadow transition">
+            祝日を制定する！
+          </button>
+        </form>
+      </div>
+
+      <!-- 投稿完了画面 -->
+      <div id="modalSuccessStep" class="hidden text-center py-4 space-y-4">
+        <div class="text-5xl">🎊</div>
+        <h3 class="text-2xl font-bold text-slate-800">祝日の制定が完了しました！</h3>
+        <p class="text-slate-600 text-sm">あなたの制定した祝日がカレンダーに追加されました。</p>
+        
+        <div class="bg-indigo-50 p-4 rounded-xl text-left border border-indigo-100">
+          <p id="createdDate" class="text-xs text-indigo-500 font-semibold"></p>
+          <p id="createdTitle" class="text-lg font-bold text-indigo-900 mt-1"></p>
+          <p id="createdReason" class="text-sm text-slate-600 mt-2 italic"></p>
+        </div>
+
+        <div class="pt-2 space-y-2">
+          <button id="shareXBtn" class="w-full bg-black hover:bg-slate-800 text-white font-bold py-2.5 rounded-lg shadow flex items-center justify-center gap-2 transition">
+            <svg class="w-4 h-4 fill-current" viewBox="0 0 24 24"><path d="M18.244 2.25h3.308l-7.227 8.26 8.502 11.24H16.17l-5.214-6.817L4.99 21.75H1.68l7.73-8.835L1.254 2.25H8.08l4.713 6.231zm-1.161 17.52h1.833L7.084 4.126H5.117z"/></svg>
+            X（旧Twitter）でシェア
+          </button>
+          <button id="finishBtn" class="w-full bg-slate-200 hover:bg-slate-300 text-slate-700 font-bold py-2.5 rounded-lg transition">
+            閉じる
+          </button>
+        </div>
+      </div>
+
+    </div>
+  </div>
+
+  <!-- 祝日詳細表示モーダル -->
+  <div id="detailModal" class="fixed inset-0 bg-slate-900/60 backdrop-blur-sm flex items-center justify-center p-4 hidden z-50">
+    <div class="bg-white rounded-2xl shadow-xl w-full max-w-md p-6 relative">
+      <button id="closeDetailBtn" class="absolute top-4 right-4 text-slate-400 hover:text-slate-600 text-xl font-bold">✕</button>
+
+      <div class="space-y-4">
+        <div>
+          <span id="detailBadge" class="inline-block text-xs font-bold px-2.5 py-1 rounded-full bg-indigo-100 text-indigo-700 mb-2">祝日</span>
+          <p id="detailDate" class="text-sm font-semibold text-slate-500"></p>
+          <h2 id="detailTitle" class="text-2xl font-bold text-slate-800"></h2>
+        </div>
+
+        <div id="detailReasonBox" class="bg-slate-50 p-4 rounded-xl border border-slate-200">
+          <p class="text-xs font-semibold text-slate-400 mb-1">休む理由・過ごし方</p>
+          <p id="detailReason" class="text-slate-700 whitespace-pre-wrap"></p>
+        </div>
+
+        <!-- アクションボタン（みんなの祝日の場合） -->
+        <div id="userHolidayActions" class="flex items-center justify-between pt-2">
+          <button id="likeBtn" class="flex items-center gap-1.5 bg-rose-50 hover:bg-rose-100 text-rose-600 px-4 py-2 rounded-lg font-bold border border-rose-200 transition">
+            ❤️ イイね！ <span id="detailLikes">0</span>
+          </button>
+          <button id="reportBtn" class="text-xs text-slate-400 hover:text-rose-500 underline">
+            通報する
+          </button>
+        </div>
+      </div>
+    </div>
+  </div>
+
+  <!-- JavaScript -->
+  <script>
+    // Supabase 設定（ご自身のURL・Anon Keyに置き換えてください）
+    const SUPABASE_URL = 'YOUR_SUPABASE_URL';
+    const SUPABASE_ANON_KEY = 'YOUR_SUPABASE_ANON_KEY';
+    const supabase = window.supabase.createClient(SUPABASE_URL, SUPABASE_ANON_KEY);
+
+    let calendar;
+    let currentHolidayData = null; // 現在詳細表示しているデータ
+    let ngWords = [];
+
+    // 今日の日付を YYYY-MM-DD 形式で取得
+    const getTodayString = () => new Date().toISOString().split('T')[0];
+
+    document.addEventListener('DOMContentLoaded', async () => {
+      initCalendar();
+      setupDateInputDefault();
+      await fetchNgWords();
+      await fetchAndRenderHolidays();
+    });
+
+    // 日付入力の初期値（今日）設定
+    function setupDateInputDefault() {
+      document.getElementById('holidayDate').value = getTodayString();
+    }
+
+    // NGワード取得
+    async function fetchNgWords() {
+      const { data } = await supabase.from('ng_words').select('word');
+      if (data) {
+        ngWords = data.map(item => item.word);
+      }
+    }
+
+    // NGワードチェック
+    function containsNgWord(...texts) {
+      const combined = texts.join(' ');
+      return ngWords.some(word => combined.includes(word));
+    }
+
+    // カレンダー初期化
+    function initCalendar() {
+      const calendarEl = document.getElementById('calendar');
+      calendar = new FullCalendar.Calendar(calendarEl, {
+        initialView: 'dayGridMonth',
+        locale: 'ja',
+        headerToolbar: {
+          left: 'prev,next today',
+          center: 'title',
+          right: ''
+        },
+        buttonText: { today: '今日' },
+        events: [],
+        eventClick: (info) => {
+          showDetailModal(info.event.extendedProps);
         }
+      });
+      calendar.render();
+    }
 
-        let currentCalendarDate = new Date();
-        let allHolidaysData = [];
+    // 日本の公的祝日取得 (既存祝日)
+    async function fetchPublicHolidays() {
+      try {
+        const res = await fetch('https://holidays-jp.github.io/api/v1/date.json');
+        const data = await res.json();
+        return Object.entries(data).map(([date, title]) => ({
+          title: `🇯🇵 ${title}`,
+          start: date,
+          color: '#ef4444', // 赤色
+          extendedProps: {
+            isPublic: true,
+            title: title,
+            date: date,
+            reason: '国民の祝日（日本の祝日）'
+          }
+        }));
+      } catch (e) {
+        console.error('日本の祝日データの取得に失敗しました', e);
+        return [];
+      }
+    }
 
-        // 日本の固定・標準祝日定義（簡易リスト）
-        const nationalHolidays = {
-            "1-1": "元日", "1-2": "成人の日", "2-11": "建国記念の日", "2-23": "天皇誕生日",
-            "3-20": "春分の日", "4-29": "昭和の日", "5-3": "憲法記念日", "5-4": "みどりの日",
-            "5-5": "こどもの日", "7-20": "海の日", "8-11": "山の日", "9-21": "敬老の日",
-            "9-23": "秋分の日", "10-12": "スポーツの日", "11-3": "文化の日", "11-23": "勤労感謝の日"
-        };
+    // Supabaseからユーザー投稿の祝日取得
+    async function fetchUserHolidays() {
+      const { data, error } = await supabase
+        .from('holidays')
+        .select('*')
+        .eq('status', 'active');
 
-        const holidayForm = document.getElementById('holidayForm');
-        const titleInput = document.getElementById('titleInput');
-        const nicknameInput = document.getElementById('nicknameInput');
-        const reasonInput = document.getElementById('reasonInput');
-        const categoryInput = document.getElementById('categoryInput');
-        const errorMessage = document.getElementById('errorMessage');
-        const holidayList = document.getElementById('holidayList');
-        const holidayCount = document.getElementById('holidayCount');
+      if (error) {
+        console.error('投稿祝日の取得失敗:', error);
+        return [];
+      }
 
-        function getMyPostIds() {
-            return JSON.parse(localStorage.getItem('my_holiday_ids') || '[]');
+      return data.map(item => ({
+        title: `🎉 ${item.title}`,
+        start: item.holiday_date,
+        color: '#4f46e5', // インディゴ色
+        extendedProps: {
+          isPublic: false,
+          id: item.id,
+          title: item.title,
+          reason: item.reason,
+          category: item.category,
+          date: item.holiday_date,
+          like_count: item.like_count,
+          report_count: item.report_count
         }
+      }));
+    }
 
-        function saveMyPostId(id) {
-            const ids = getMyPostIds();
-            ids.push(id);
-            localStorage.setItem('my_holiday_ids', JSON.stringify(ids));
-        }
+    // 両方の祝日を結合してカレンダーに再描画
+    async function fetchAndRenderHolidays() {
+      const publicEvents = await fetchPublicHolidays();
+      const userEvents = await fetchUserHolidays();
+      
+      calendar.removeAllEvents();
+      calendar.addEventSource([...publicEvents, ...userEvents]);
+    }
 
-        function removeMyPostId(id) {
-            const ids = getMyPostIds().filter(itemId => itemId !== id);
-            localStorage.setItem('my_holiday_ids', JSON.stringify(ids));
-        }
+    // --- モーダル制御 ---
+    const formModal = document.getElementById('formModal');
+    const detailModal = document.getElementById('detailModal');
 
-        async function fetchHolidays() {
-            if (!db) return;
-            const { data, error } = await db
-                .from('holidays')
-                .select('*')
-                .eq('status', 'active')
-                .order('id', { ascending: false });
+    document.getElementById('openFormBtn').addEventListener('click', () => {
+      document.getElementById('holidayForm').reset();
+      setupDateInputDefault();
+      document.getElementById('modalFormStep').classList.remove('hidden');
+      document.getElementById('modalSuccessStep').classList.add('hidden');
+      formModal.classList.remove('hidden');
+    });
 
-            if (error) {
-                console.error(error);
-                holidayList.innerHTML = '<div class="col-span-full text-center text-red-500 py-4">データの読み込みに失敗しました</div>';
-                return;
-            }
+    document.getElementById('closeFormBtn').addEventListener('click', () => formModal.classList.add('hidden'));
+    document.getElementById('closeDetailBtn').addEventListener('click', () => detailModal.classList.add('hidden'));
+    document.getElementById('finishBtn').addEventListener('click', () => formModal.classList.add('hidden'));
 
-            allHolidaysData = data;
-            holidayCount.textContent = `${data.length}件`;
+    // --- 投稿処理 ---
+    document.getElementById('holidayForm').addEventListener('submit', async (e) => {
+      e.preventDefault();
 
-            renderCalendar();
+      const holiday_date = document.getElementById('holidayDate').value;
+      const title = document.getElementById('holidayTitle').value.trim();
+      const reason = document.getElementById('holidayReason').value.trim();
+      const category = document.getElementById('holidayCategory').value;
 
-            if (data.length === 0) {
-                holidayList.innerHTML = '<div class="col-span-full text-center py-12 text-slate-400 text-sm">まだ祝日がありません。最初の祝日を作ってみましょう！</div>';
-                return;
-            }
+      if (!title) {
+        alert('祝日名を入力してください');
+        return;
+      }
 
-            const myIds = getMyPostIds();
+      if (containsNgWord(title, reason)) {
+        alert('不適切な単語（NGワード）が含まれているため投稿できません。');
+        return;
+      }
 
-            holidayList.innerHTML = data.map(item => {
-                const isMyPost = myIds.includes(item.id);
-                const nickname = item.nickname || '名無しの休日びと';
-                const createdDate = new Date(item.created_at).toLocaleString('ja-JP', { dateStyle: 'short', timeStyle: 'short' });
+      const submitBtn = document.getElementById('submitBtn');
+      submitBtn.disabled = true;
+      submitBtn.innerText = '送信中...';
 
-                return `
-                <div class="bg-white p-5 rounded-xl shadow-sm border border-slate-100 flex flex-col justify-between space-y-3 relative hover:shadow-md transition">
-                    <div>
-                        <div class="flex items-center justify-between text-xs text-slate-400 mb-1">
-                            <span class="bg-amber-100 text-amber-800 font-semibold px-2 py-0.5 rounded">${escapeHtml(item.category)}</span>
-                            <span>👤 ${escapeHtml(nickname)} • ${createdDate}</span>
-                        </div>
-                        <h4 class="font-bold text-slate-800 text-base leading-snug mb-1">🎉 ${escapeHtml(item.title)}</h4>
-                        ${item.reason ? `<p class="text-xs text-slate-600 leading-relaxed">${escapeHtml(item.reason)}</p>` : ''}
-                    </div>
+      // 送信データ（不要なカラムを削除して安全に送信）
+      const insertData = {
+        holiday_date,
+        title,
+        reason,
+        category
+      };
 
-                    <div class="flex items-center justify-between pt-2 border-t border-slate-50">
-                        <button onclick="likeHoliday(${item.id}, ${item.like_count})" class="flex items-center gap-1 text-xs text-amber-600 font-bold hover:bg-amber-50 px-2 py-1 rounded transition">
-                            <span>👍 その祝日イイね！</span>
-                            <span class="bg-amber-100 text-amber-700 px-1.5 py-0.5 rounded-full text-[10px]">${item.like_count}</span>
-                        </button>
-                        
-                        <div class="flex items-center gap-2">
-                            ${isMyPost ? `
-                                <button onclick="deleteMyHoliday(${item.id})" class="text-xs text-red-500 hover:text-red-700 font-bold transition">
-                                    🗑️ 削除
-                                </button>
-                            ` : ''}
-                            <button onclick="reportHoliday(${item.id}, ${item.report_count})" class="text-[11px] text-slate-400 hover:text-red-500 transition">
-                                通報
-                            </button>
-                        </div>
-                    </div>
-                </div>
-            `}).join('');
-        }
+      const { data, error } = await supabase
+        .from('holidays')
+        .insert([insertData])
+        .select();
 
-        // IP取得サービスAPIからIPを取得
-        async function getClientIp() {
-            try {
-                const res = await fetch('https://api.ipify.org?format=json');
-                const data = await res.json();
-                return data.ip;
-            } catch (e) {
-                return 'unknown';
-            }
-        }
+      submitBtn.disabled = false;
+      submitBtn.innerText = '祝日を制定する！';
 
-        holidayForm.addEventListener('submit', async (e) => {
-            e.preventDefault();
-            errorMessage.classList.add('hidden');
+      if (error) {
+        alert(`投稿に失敗しました: ${error.message}`);
+        return;
+      }
 
-            const title = titleInput.value.trim();
-            const reason = reasonInput.value.trim();
-            const category = categoryInput.value;
-            const nickname = nicknameInput.value.trim() || '名無しの休日びと';
+      // 投稿成功後、シェア用に保持
+      currentHolidayData = { holiday_date, title, reason };
 
-            const client_ip = await getClientIp();
-            const user_agent = navigator.userAgent;
+      // 完了画面のセットアップ
+      document.getElementById('createdDate').innerText = holiday_date;
+      document.getElementById('createdTitle').innerText = title;
+      document.getElementById('createdReason').innerText = reason || '（理由の記述なし）';
 
-            const { data, error } = await db.from('holidays').insert([
-                { title, reason, category, nickname, client_ip, user_agent }
-            ]).select();
+      document.getElementById('modalFormStep').classList.add('hidden');
+      document.getElementById('modalSuccessStep').classList.remove('hidden');
 
-            if (error) {
-                alert('投稿に失敗しました: ' + error.message);
-            } else if (data && data[0]) {
-                saveMyPostId(data[0].id);
-                titleInput.value = '';
-                reasonInput.value = '';
-                nicknameInput.value = '';
-                fetchHolidays();
-            }
-        });
+      // カレンダー再読み込み
+      fetchAndRenderHolidays();
+    });
 
-        async function deleteMyHoliday(id) {
-            if (!confirm('あなたが投稿したこの祝日を削除してもよろしいですか？')) return;
-            const { error } = await db.from('holidays').update({ status: 'deleted' }).eq('id', id);
-            if (error) {
-                alert('削除に失敗しました: ' + error.message);
-            } else {
-                removeMyPostId(id);
-                fetchHolidays();
-            }
-        }
+    // --- X（Twitter）シェア ---
+    document.getElementById('shareXBtn').addEventListener('click', () => {
+      if (!currentHolidayData) return;
+      const { holiday_date, title, reason } = currentHolidayData;
+      const text = `【祝日制定】${holiday_date}を「${title}」に指定しました！\n理由: ${reason || '自分をいたわるため'}\n\n#みんなの祝日 #祝日カレンダー`;
+      const url = `https://twitter.com/intent/tweet?text=${encodeURIComponent(text)}`;
+      window.open(url, '_blank');
+    });
 
-        async function likeHoliday(id, currentLikes) {
-            if(!db) return;
-            await db.from('holidays').update({ like_count: currentLikes + 1 }).eq('id', id);
-            fetchHolidays();
-        }
+    // --- 詳細ダイアログ表示 ---
+    function showDetailModal(props) {
+      currentHolidayData = props;
 
-        async function reportHoliday(id, currentReports) {
-            if(!db) return;
-            if(!confirm('この投稿に通報しますか？')) return;
-            await db.from('holidays').update({ report_count: currentReports + 1 }).eq('id', id);
-            alert('通報を受け付けました');
-            fetchHolidays();
-        }
+      const badge = document.getElementById('detailBadge');
+      const userActions = document.getElementById('userHolidayActions');
 
-        // カレンダー表示処理
-        function renderCalendar() {
-            const year = currentCalendarDate.getFullYear();
-            const month = currentCalendarDate.getMonth();
-            document.getElementById('calendarMonthLabel').textContent = `${year}年 ${month + 1}月`;
+      document.getElementById('detailDate').innerText = props.date;
+      document.getElementById('detailTitle').innerText = props.title;
+      document.getElementById('detailReason').innerText = props.reason || '（理由の記載はありません）';
 
-            const firstDay = new Date(year, month, 1).getDay();
-            const lastDate = new Date(year, month + 1, 0).getDate();
+      if (props.isPublic) {
+        badge.innerText = '日本の祝日';
+        badge.className = 'inline-block text-xs font-bold px-2.5 py-1 rounded-full bg-rose-100 text-rose-700 mb-2';
+        userActions.classList.add('hidden');
+      } else {
+        badge.innerText = `みんなの祝日 [${props.category || 'その他'}]`;
+        badge.className = 'inline-block text-xs font-bold px-2.5 py-1 rounded-full bg-indigo-100 text-indigo-700 mb-2';
+        document.getElementById('detailLikes').innerText = props.like_count || 0;
+        userActions.classList.remove('hidden');
+      }
 
-            const grid = document.getElementById('calendarGrid');
-            grid.innerHTML = '';
+      detailModal.classList.remove('hidden');
+    }
 
-            for (let i = 0; i < firstDay; i++) {
-                grid.innerHTML += `<div class="h-16 bg-slate-50/50 rounded"></div>`;
-            }
+    // --- イイね機能 ---
+    document.getElementById('likeBtn').addEventListener('click', async () => {
+      if (!currentHolidayData || currentHolidayData.isPublic) return;
 
-            for (let day = 1; day <= lastDate; day++) {
-                const key = `${month + 1}-${day}`;
-                const natHoliday = nationalHolidays[key];
+      const newLikes = (currentHolidayData.like_count || 0) + 1;
+      const { error } = await supabase
+        .from('holidays')
+        .update({ like_count: newLikes })
+        .eq('id', currentHolidayData.id);
 
-                // この日に投稿されたオリジナル祝日を抽出
-                const origHolidays = allHolidaysData.filter(h => {
-                    const d = new Date(h.created_at);
-                    return d.getFullYear() === year && d.getMonth() === month && d.getDate() === day;
-                });
+      if (!error) {
+        currentHolidayData.like_count = newLikes;
+        document.getElementById('detailLikes').innerText = newLikes;
+        fetchAndRenderHolidays();
+      }
+    });
 
-                grid.innerHTML += `
-                    <div class="h-16 border border-slate-100 rounded p-1 flex flex-col justify-between items-start text-left bg-white overflow-hidden">
-                        <span class="font-bold text-slate-700">${day}</span>
-                        <div class="w-full space-y-0.5 overflow-hidden">
-                            ${natHoliday ? `<div class="bg-red-100 text-red-700 text-[9px] px-1 rounded truncate">${natHoliday}</div>` : ''}
-                            ${origHolidays.map(oh => `<div class="bg-amber-100 text-amber-800 text-[9px] px-1 rounded truncate">🎉 ${escapeHtml(oh.title)}</div>`).join('')}
-                        </div>
-                    </div>
-                `;
-            }
-        }
+    // --- 通報機能 ---
+    document.getElementById('reportBtn').addEventListener('click', async () => {
+      if (!currentHolidayData || currentHolidayData.isPublic) return;
 
-        function changeMonth(offset) {
-            currentCalendarDate.setMonth(currentCalendarDate.getMonth() + offset);
-            renderCalendar();
-        }
+      if (!confirm('この投稿を通報しますか？（通報が重なると自動非表示になります）')) return;
 
-        // SNSシェア機能
-        function shareOnX() {
-            const text = encodeURIComponent("自分だけのオリジナルの祝日を投稿・共有しよう！「みんなの祝日図鑑」🎉");
-            const url = encodeURIComponent(window.location.href);
-            window.open(`https://twitter.com/intent/tweet?text=${text}&url=${url}`, '_blank');
-        }
+      const newReports = (currentHolidayData.report_count || 0) + 1;
+      const { error } = await supabase
+        .from('holidays')
+        .update({ report_count: newReports })
+        .eq('id', currentHolidayData.id);
 
-        function shareOnLINE() {
-            const url = encodeURIComponent(window.location.href);
-            window.open(`https://social-plugins.line.me/lineit/share?url=${url}`, '_blank');
-        }
-
-        function copyLink() {
-            navigator.clipboard.writeText(window.location.href);
-            alert("ページのURLをコピーしました！");
-        }
-
-        // 文字化け修正済みのHTMLエスケープ関数
-        function escapeHtml(str) {
-            if(!str) return '';
-            return str.replace(/[&<>"']/g, (m) => ({ '&': '&amp;', '<': '&lt;', '>': '&gt;', '"': '&quot;', "'": '&#039;' })[m]);
-        }
-
-        window.addEventListener('DOMContentLoaded', fetchHolidays);
-    </script>
+      if (!error) {
+        alert('通報を受け付けました。');
+        detailModal.classList.add('hidden');
+        fetchAndRenderHolidays();
+      }
+    });
+  </script>
 </body>
 </html>
