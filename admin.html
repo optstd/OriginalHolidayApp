@@ -7,9 +7,9 @@
     <script src="https://cdn.tailwindcss.com"></script>
     <script src="https://cdn.jsdelivr.net/npm/@supabase/supabase-js@2"></script>
 </head>
-<body class="bg-slate-100 min-h-screen text-slate-800 font-sans p-4">
+<body class="bg-slate-100 min-h-screen text-slate-800 font-sans p-4 flex flex-col justify-between">
 
-    <div class="max-w-4xl mx-auto space-y-6">
+    <div class="max-w-6xl mx-auto space-y-6 w-full">
 
         <header class="flex justify-between items-center bg-slate-800 text-white p-4 rounded-xl shadow">
             <h1 class="font-bold text-lg">⚙️ 管理者ダッシュボード</h1>
@@ -36,7 +36,7 @@
         <!-- 管理コンテンツ（全投稿一覧） -->
         <section id="adminContent" class="hidden space-y-4">
             <div class="bg-white p-4 rounded-xl shadow flex justify-between items-center">
-                <span class="font-bold text-sm">全投稿一覧（削除・通報監視）</span>
+                <span class="font-bold text-sm">全投稿監査ログ（IP・端末情報・日時）</span>
                 <button onclick="fetchAdminHolidays()" class="text-xs bg-slate-200 hover:bg-slate-300 px-2.5 py-1 rounded">🔄 更新</button>
             </div>
 
@@ -45,9 +45,10 @@
                     <thead>
                         <tr class="bg-slate-50 border-b text-slate-600">
                             <th class="p-3">ID</th>
-                            <th class="p-3">タイトル</th>
-                            <th class="p-3">カテゴリ</th>
-                            <th class="p-3">イイね</th>
+                            <th class="p-3">投稿日時</th>
+                            <th class="p-3">タイトル / ニックネーム</th>
+                            <th class="p-3">IPアドレス</th>
+                            <th class="p-3">端末情報 (User-Agent)</th>
                             <th class="p-3">通報数</th>
                             <th class="p-3">状態</th>
                             <th class="p-3 text-right">操作</th>
@@ -62,9 +63,14 @@
 
     </div>
 
+    <!-- コピーライト -->
+    <footer class="text-slate-400 text-xs text-center py-6 mt-12">
+        <p>&copy; 2026 OPTSTD All rights reserved.</p>
+    </footer>
+
     <script>
-        const SUPABASE_URL = "https://mcukrfldkrublakqshmf.supabase.co";
-        const SUPABASE_KEY = "sb_publishable_eoyKMMNR8yWeXmqeLu8yFQ_aU1k585n";
+        const SUPABASE_URL = "https://xxxxxx.supabase.co"; // ご自身のURL
+        const SUPABASE_KEY = "sb_p_xxxxxxx";                // ご自身のPublishable key
 
         const db = supabase.createClient(SUPABASE_URL, SUPABASE_KEY);
 
@@ -74,7 +80,6 @@
         const loginForm = document.getElementById('loginForm');
         const loginError = document.getElementById('loginError');
 
-        // ログイン状態チェック
         async function checkAuth() {
             const { data: { session } } = await db.auth.getSession();
             if (session) {
@@ -121,19 +126,27 @@
             }
 
             const tbody = document.getElementById('adminTableBody');
-            tbody.innerHTML = data.map(item => `
+            tbody.innerHTML = data.map(item => {
+                const fullDateTime = new Date(item.created_at).toLocaleString('ja-JP');
+                const nickname = item.nickname || '名無しの休日びと';
+
+                return `
                 <tr class="border-b hover:bg-slate-50 ${item.report_count > 0 ? 'bg-red-50' : ''}">
                     <td class="p-3 font-mono">${item.id}</td>
-                    <td class="p-3 font-bold">${escapeHtml(item.title)}</td>
-                    <td class="p-3">${escapeHtml(item.category)}</td>
-                    <td class="p-3">${item.like_count}</td>
+                    <td class="p-3 whitespace-nowrap text-slate-500">${fullDateTime}</td>
+                    <td class="p-3">
+                        <div class="font-bold text-slate-800">${escapeHtml(item.title)}</div>
+                        <div class="text-[10px] text-slate-400">👤 ${escapeHtml(nickname)}</div>
+                    </td>
+                    <td class="p-3 font-mono text-[11px] text-blue-600">${item.client_ip || '未記録'}</td>
+                    <td class="p-3 text-[10px] text-slate-500 max-w-xs truncate" title="${escapeHtml(item.user_agent)}">${escapeHtml(item.user_agent) || '未記録'}</td>
                     <td class="p-3 font-bold ${item.report_count > 0 ? 'text-red-600' : ''}">${item.report_count}</td>
                     <td class="p-3">
                         <span class="px-2 py-0.5 rounded text-[10px] ${item.status === 'active' ? 'bg-green-100 text-green-800' : 'bg-gray-200 text-gray-600'}">
                             ${item.status}
                         </span>
                     </td>
-                    <td class="p-3 text-right space-x-1">
+                    <td class="p-3 text-right whitespace-nowrap space-x-1">
                         ${item.status === 'active' ? `
                             <button onclick="forceDelete(${item.id})" class="bg-red-500 hover:bg-red-600 text-white px-2 py-1 rounded text-[10px]">強制非表示</button>
                         ` : `
@@ -141,7 +154,7 @@
                         `}
                     </td>
                 </tr>
-            `).join('');
+            `}).join('');
         }
 
         async function forceDelete(id) {
@@ -155,9 +168,10 @@
             fetchAdminHolidays();
         }
 
+        // 文字化け修正済みのHTMLエスケープ関数
         function escapeHtml(str) {
             if(!str) return '';
-            return str.replace(/[&< me"']/g, (m) => ({ '&': '&amp;', '<': '&lt;', '>': '&gt;', '"': '&quot;', "'": '&#039;' })[m]);
+            return str.replace(/[&<>"']/g, (m) => ({ '&': '&amp;', '<': '&lt;', '>': '&gt;', '"': '&quot;', "'": '&#039;' })[m]);
         }
 
         window.addEventListener('DOMContentLoaded', checkAuth);
