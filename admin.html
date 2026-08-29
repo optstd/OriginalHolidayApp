@@ -1,0 +1,166 @@
+<!DOCTYPE html>
+<html lang="ja">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>管理者ダッシュボード - みんなの祝日図鑑</title>
+    <script src="https://cdn.tailwindcss.com"></script>
+    <script src="https://cdn.jsdelivr.net/npm/@supabase/supabase-js@2"></script>
+</head>
+<body class="bg-slate-100 min-h-screen text-slate-800 font-sans p-4">
+
+    <div class="max-w-4xl mx-auto space-y-6">
+
+        <header class="flex justify-between items-center bg-slate-800 text-white p-4 rounded-xl shadow">
+            <h1 class="font-bold text-lg">⚙️ 管理者ダッシュボード</h1>
+            <button id="logoutBtn" onclick="logout()" class="hidden text-xs bg-red-600 hover:bg-red-700 px-3 py-1.5 rounded transition">ログアウト</button>
+        </header>
+
+        <!-- ログインフォーム -->
+        <section id="loginSection" class="bg-white p-6 rounded-xl shadow-md max-w-md mx-auto">
+            <h2 class="font-bold text-md mb-4 text-slate-700">管理者ログイン</h2>
+            <form id="loginForm" class="space-y-4">
+                <div>
+                    <label class="block text-xs font-bold text-slate-600 mb-1">メールアドレス</label>
+                    <input type="email" id="emailInput" required class="w-full p-2.5 border rounded-lg text-sm">
+                </div>
+                <div>
+                    <label class="block text-xs font-bold text-slate-600 mb-1">パスワード</label>
+                    <input type="password" id="passwordInput" required class="w-full p-2.5 border rounded-lg text-sm">
+                </div>
+                <div id="loginError" class="text-red-500 text-xs hidden"></div>
+                <button type="submit" class="w-full bg-slate-800 hover:bg-slate-900 text-white font-bold py-2.5 rounded-lg text-sm">ログイン</button>
+            </form>
+        </section>
+
+        <!-- 管理コンテンツ（全投稿一覧） -->
+        <section id="adminContent" class="hidden space-y-4">
+            <div class="bg-white p-4 rounded-xl shadow flex justify-between items-center">
+                <span class="font-bold text-sm">全投稿一覧（削除・通報監視）</span>
+                <button onclick="fetchAdminHolidays()" class="text-xs bg-slate-200 hover:bg-slate-300 px-2.5 py-1 rounded">🔄 更新</button>
+            </div>
+
+            <div class="bg-white rounded-xl shadow overflow-x-auto">
+                <table class="w-full text-left text-xs border-collapse">
+                    <thead>
+                        <tr class="bg-slate-50 border-b text-slate-600">
+                            <th class="p-3">ID</th>
+                            <th class="p-3">タイトル</th>
+                            <th class="p-3">カテゴリ</th>
+                            <th class="p-3">イイね</th>
+                            <th class="p-3">通報数</th>
+                            <th class="p-3">状態</th>
+                            <th class="p-3 text-right">操作</th>
+                        </tr>
+                    </thead>
+                    <tbody id="adminTableBody">
+                        <!-- 動的生成 -->
+                    </tbody>
+                </table>
+            </div>
+        </section>
+
+    </div>
+
+    <script>
+        const SUPABASE_URL = "https://xxxxxx.supabase.co"; // ご自身のURL
+        const SUPABASE_KEY = "sb_p_xxxxxxx";                // ご自身のPublishable key
+
+        const db = supabase.createClient(SUPABASE_URL, SUPABASE_KEY);
+
+        const loginSection = document.getElementById('loginSection');
+        const adminContent = document.getElementById('adminContent');
+        const logoutBtn = document.getElementById('logoutBtn');
+        const loginForm = document.getElementById('loginForm');
+        const loginError = document.getElementById('loginError');
+
+        // ログイン状態チェック
+        async function checkAuth() {
+            const { data: { session } } = await db.auth.getSession();
+            if (session) {
+                loginSection.classList.add('hidden');
+                adminContent.classList.remove('hidden');
+                logoutBtn.classList.remove('hidden');
+                fetchAdminHolidays();
+            } else {
+                loginSection.classList.remove('hidden');
+                adminContent.classList.add('hidden');
+                logoutBtn.classList.add('hidden');
+            }
+        }
+
+        loginForm.addEventListener('submit', async (e) => {
+            e.preventDefault();
+            loginError.classList.add('hidden');
+            const email = document.getElementById('emailInput').value;
+            const password = document.getElementById('passwordInput').value;
+
+            const { error } = await db.auth.signInWithPassword({ email, password });
+            if (error) {
+                loginError.textContent = 'ログインに失敗しました: ' + error.message;
+                loginError.classList.remove('hidden');
+            } else {
+                checkAuth();
+            }
+        });
+
+        async function logout() {
+            await db.auth.signOut();
+            checkAuth();
+        }
+
+        async function fetchAdminHolidays() {
+            const { data, error } = await db
+                .from('holidays')
+                .select('*')
+                .order('id', { ascending: false });
+
+            if (error) {
+                alert('データ取得失敗: ' + error.message);
+                return;
+            }
+
+            const tbody = document.getElementById('adminTableBody');
+            tbody.innerHTML = data.map(item => `
+                <tr class="border-b hover:bg-slate-50 ${item.report_count > 0 ? 'bg-red-50' : ''}">
+                    <td class="p-3 font-mono">${item.id}</td>
+                    <td class="p-3 font-bold">${escapeHtml(item.title)}</td>
+                    <td class="p-3">${escapeHtml(item.category)}</td>
+                    <td class="p-3">${item.like_count}</td>
+                    <td class="p-3 font-bold ${item.report_count > 0 ? 'text-red-600' : ''}">${item.report_count}</td>
+                    <td class="p-3">
+                        <span class="px-2 py-0.5 rounded text-[10px] ${item.status === 'active' ? 'bg-green-100 text-green-800' : 'bg-gray-200 text-gray-600'}">
+                            ${item.status}
+                        </span>
+                    </td>
+                    <td class="p-3 text-right space-x-1">
+                        ${item.status === 'active' ? `
+                            <button onclick="forceDelete(${item.id})" class="bg-red-500 hover:bg-red-600 text-white px-2 py-1 rounded text-[10px]">強制非表示</button>
+                        ` : `
+                            <button onclick="restore(${item.id})" class="bg-slate-500 text-white px-2 py-1 rounded text-[10px]">復元</button>
+                        `}
+                    </td>
+                </tr>
+            `).join('');
+        }
+
+        async function forceDelete(id) {
+            if (!confirm(`ID: ${id} の投稿を強制非表示にしますか？`)) return;
+            await db.from('holidays').update({ status: 'deleted' }).eq('id', id);
+            fetchAdminHolidays();
+        }
+
+        async function restore(id) {
+            await db.from('holidays').update({ status: 'active' }).eq('id', id);
+            fetchAdminHolidays();
+        }
+
+        function escapeHtml(str) {
+            if(!str) return '';
+            return str.replace(/[&< me"']/g, (m) => ({ '&': '&amp;', '<': '&lt;', '>': '&gt;', '"': '&quot;', "'": '&#039;' })[m]);
+        }
+
+        window.addEventListener('DOMContentLoaded', checkAuth);
+    </script>
+</body>
+</html>
