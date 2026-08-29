@@ -49,7 +49,7 @@
                         <select id="categoryInput" class="w-full p-3 border border-slate-300 rounded-lg text-sm bg-white">
                             <option value="ドライブ・おでかけ">🚗 ドライブ・おでかけ</option>
                             <option value="映画・エンタメ">🎬 映画・エンタメ</option>
-                            <option value="リフレッシュ・睡眠">温泉 リフレッシュ・睡眠</option>
+                            <option value="リフレッシュ・睡眠">♨️ リフレッシュ・睡眠</option>
                             <option value="グルメ・カフェ">☕ グルメ・カフェ</option>
                             <option value="家族・イベント">👨‍👩‍👧 家族・イベント</option>
                             <option value="その他">✨ その他</option>
@@ -82,17 +82,13 @@
     </main>
 
     <script>
-        // Vercel等で定義した NEXT_PUBLIC_ 変数を自動抽出・代替取得する仕組み
-        const envUrl = typeof process !== 'undefined' ? process.env.NEXT_PUBLIC_SUPABASE_URL : '';
-        const envKey = typeof process !== 'undefined' ? process.env.NEXT_PUBLIC_SUPABASE_KEY : '';
-
-        // 環境変数またはフォールバック用の変数をセット
-        const SUPABASE_URL = window.SUPABASE_URL || envUrl;
-        const SUPABASE_KEY = window.SUPABASE_KEY || envKey;
+        // GitHub Secretsからデプロイ時に自動置換されるプレースホルダー
+        const SUPABASE_URL = "SUPABASE_URL_PLACEHOLDER";
+        const SUPABASE_KEY = "SUPABASE_KEY_PLACEHOLDER";
 
         let db;
         try {
-            if (SUPABASE_URL && SUPABASE_KEY) {
+            if (SUPABASE_URL !== "SUPABASE_URL_PLACEHOLDER" && SUPABASE_KEY !== "SUPABASE_KEY_PLACEHOLDER") {
                 db = supabase.createClient(SUPABASE_URL, SUPABASE_KEY);
             }
         } catch(e) {
@@ -123,7 +119,7 @@
 
         async function fetchHolidays() {
             if (!db) {
-                holidayList.innerHTML = '<div class="col-span-full text-center text-slate-500 py-8">データベースへ接続中、または初期設定の準備をしております...</div>';
+                holidayList.innerHTML = '<div class="col-span-full text-center text-slate-400 py-8">データベースへ接続中、またはビルド準備をしております...</div>';
                 return;
             }
             const { data, error } = await db
@@ -206,11 +202,13 @@
         });
 
         async function likeHoliday(id, currentLikes) {
+            if(!db) return;
             await db.from('holidays').update({ like_count: currentLikes + 1 }).eq('id', id);
             fetchHolidays();
         }
 
         async function reportHoliday(id, currentReports) {
+            if(!db) return;
             if(!confirm('この投稿を通報しますか？（複数回の通報で自動非表示となります）')) return;
             await db.from('holidays').update({ report_count: currentReports + 1 }).eq('id', id);
             alert('通報を受け付けました');
