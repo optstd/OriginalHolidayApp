@@ -49,7 +49,7 @@
                         <select id="categoryInput" class="w-full p-3 border border-slate-300 rounded-lg text-sm bg-white">
                             <option value="ドライブ・おでかけ">🚗 ドライブ・おでかけ</option>
                             <option value="映画・エンタメ">🎬 映画・エンタメ</option>
-                            <option value="リフレッシュ・睡眠">♨️ リフレッシュ・睡眠</option>
+                            <option value="リフレッシュ・睡眠">温泉 リフレッシュ・睡眠</option>
                             <option value="グルメ・カフェ">☕ グルメ・カフェ</option>
                             <option value="家族・イベント">👨‍👩‍👧 家族・イベント</option>
                             <option value="その他">✨ その他</option>
@@ -82,15 +82,13 @@
     </main>
 
     <script>
-        // GitHub Secretsからデプロイ時に自動置換されるプレースホルダー
-        const SUPABASE_URL = "SUPABASE_URL_PLACEHOLDER";
-        const SUPABASE_KEY = "SUPABASE_KEY_PLACEHOLDER";
+        // ★以下のダブルクォーテーション内をご自身のSupabase情報に書き換えてください★
+        const SUPABASE_URL = "https://mcukrfldkrublakqshmf.supabase.co/rest/v1/";
+        const SUPABASE_KEY = "sb_publishable_eoyKMMNR8yWeXmqeLu8yFQ_aU1k585n";
 
         let db;
         try {
-            if (SUPABASE_URL !== "SUPABASE_URL_PLACEHOLDER" && SUPABASE_KEY !== "SUPABASE_KEY_PLACEHOLDER") {
-                db = supabase.createClient(SUPABASE_URL, SUPABASE_KEY);
-            }
+            db = supabase.createClient(SUPABASE_URL, SUPABASE_KEY);
         } catch(e) {
             console.error('Supabase Init Error', e);
         }
@@ -118,10 +116,7 @@
         }
 
         async function fetchHolidays() {
-            if (!db) {
-                holidayList.innerHTML = '<div class="col-span-full text-center text-slate-400 py-8">データベースへ接続中、またはビルド準備をしております...</div>';
-                return;
-            }
+            if (!db) return;
             const { data, error } = await db
                 .from('holidays')
                 .select('*')
@@ -172,11 +167,6 @@
             const title = titleInput.value.trim();
             const reason = reasonInput.value.trim();
             const category = categoryInput.value;
-
-            if(!db) {
-                alert('データベースが接続されていません。');
-                return;
-            }
 
             const hitNgTitle = await checkNgWords(title);
             const hitNgReason = await checkNgWords(reason);
