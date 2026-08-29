@@ -4,14 +4,11 @@
     <meta charset="UTF-8">
     <meta name="viewport" content="width=device-width, initial-scale=1.0">
     <title>みんなの祝日図鑑 - 有休・お休みアイデア共有</title>
-    <!-- Tailwind CSS (デザイン用) -->
     <script src="https://cdn.tailwindcss.com"></script>
-    <!-- Supabase JavaScript SDK -->
     <script src="https://cdn.jsdelivr.net/npm/@supabase/supabase-js@2"></script>
 </head>
 <body class="bg-amber-50 min-h-screen text-slate-800 font-sans">
 
-    <!-- ヘッダー -->
     <header class="bg-amber-500 text-white shadow-md p-4 sticky top-0 z-10">
         <div class="max-w-4xl mx-auto flex justify-between items-center">
             <h1 class="text-xl md:text-2xl font-bold flex items-center gap-2">
@@ -23,7 +20,6 @@
 
     <main class="max-w-4xl mx-auto p-4 space-y-6">
 
-        <!-- イントロダクション -->
         <section class="bg-white p-6 rounded-2xl shadow-sm border border-amber-100">
             <h2 class="text-lg font-bold text-amber-700 mb-2">休む理由を「オリジナルの祝日」にしよう！</h2>
             <p class="text-sm text-slate-600 leading-relaxed">
@@ -32,7 +28,7 @@
             </p>
         </section>
 
-        <!-- 祝日投稿フォーム -->
+        <!-- 投稿フォーム -->
         <section class="bg-white p-6 rounded-2xl shadow-sm border border-amber-200">
             <h3 class="text-md font-bold mb-4 flex items-center gap-2">
                 <span>✍️</span> 新しい「祝日」を制定する
@@ -49,7 +45,7 @@
                         <select id="categoryInput" class="w-full p-3 border border-slate-300 rounded-lg text-sm bg-white">
                             <option value="ドライブ・おでかけ">🚗 ドライブ・おでかけ</option>
                             <option value="映画・エンタメ">🎬 映画・エンタメ</option>
-                            <option value="リフレッシュ・睡眠">温泉 リフレッシュ・睡眠</option>
+                            <option value="リフレッシュ・睡眠">♨️ リフレッシュ・睡眠</option>
                             <option value="グルメ・カフェ">☕ グルメ・カフェ</option>
                             <option value="家族・イベント">👨‍👩‍👧 家族・イベント</option>
                             <option value="その他">✨ その他</option>
@@ -68,7 +64,7 @@
             </form>
         </section>
 
-        <!-- 祝日一覧（タイムライン） -->
+        <!-- 祝日一覧 -->
         <section class="space-y-4">
             <h3 class="text-md font-bold text-slate-700 flex items-center justify-between">
                 <span>📅 みんなが作った祝日一覧</span>
@@ -101,18 +97,19 @@
         const holidayList = document.getElementById('holidayList');
         const holidayCount = document.getElementById('holidayCount');
 
-        async function checkNgWords(text) {
-            if(!text || !db) return false;
-            try {
-                const { data: ngWords } = await db.from('ng_words').select('word');
-                if (!ngWords) return false;
-                for (let item of ngWords) {
-                    if (text.includes(item.word)) return item.word;
-                }
-            } catch(e) {
-                console.error(e);
-            }
-            return false;
+        function getMyPostIds() {
+            return JSON.parse(localStorage.getItem('my_holiday_ids') || '[]');
+        }
+
+        function saveMyPostId(id) {
+            const ids = getMyPostIds();
+            ids.push(id);
+            localStorage.setItem('my_holiday_ids', JSON.stringify(ids));
+        }
+
+        function removeMyPostId(id) {
+            const ids = getMyPostIds().filter(itemId => itemId !== id);
+            localStorage.setItem('my_holiday_ids', JSON.stringify(ids));
         }
 
         async function fetchHolidays() {
@@ -136,7 +133,11 @@
                 return;
             }
 
-            holidayList.innerHTML = data.map(item => `
+            const myIds = getMyPostIds();
+
+            holidayList.innerHTML = data.map(item => {
+                const isMyPost = myIds.includes(item.id);
+                return `
                 <div class="bg-white p-5 rounded-xl shadow-sm border border-slate-100 flex flex-col justify-between space-y-3 relative hover:shadow-md transition">
                     <div>
                         <div class="flex items-center justify-between text-xs text-slate-400 mb-1">
@@ -152,12 +153,20 @@
                             <span>👍 その祝日イイね！</span>
                             <span class="bg-amber-100 text-amber-700 px-1.5 py-0.5 rounded-full text-[10px]">${item.like_count}</span>
                         </button>
-                        <button onclick="reportHoliday(${item.id}, ${item.report_count})" class="text-[11px] text-slate-400 hover:text-red-500 transition">
-                            通報
-                        </button>
+                        
+                        <div class="flex items-center gap-2">
+                            ${isMyPost ? `
+                                <button onclick="deleteMyHoliday(${item.id})" class="text-xs text-red-500 hover:text-red-700 font-bold transition">
+                                    🗑️ 削除
+                                </button>
+                            ` : ''}
+                            <button onclick="reportHoliday(${item.id}, ${item.report_count})" class="text-[11px] text-slate-400 hover:text-red-500 transition">
+                                通報
+                            </button>
+                        </div>
                     </div>
                 </div>
-            `).join('');
+            `}).join('');
         }
 
         holidayForm.addEventListener('submit', async (e) => {
@@ -168,28 +177,30 @@
             const reason = reasonInput.value.trim();
             const category = categoryInput.value;
 
-            const hitNgTitle = await checkNgWords(title);
-            const hitNgReason = await checkNgWords(reason);
-
-            if (hitNgTitle || hitNgReason) {
-                errorMessage.textContent = `⚠️ 不適切な表現（${hitNgTitle || hitNgReason}）が含まれているため投稿できません。`;
-                errorMessage.classList.remove('hidden');
-                return;
-            }
-
-            const { error } = await db.from('holidays').insert([
+            const { data, error } = await db.from('holidays').insert([
                 { title, reason, category }
-            ]);
+            ]).select();
 
             if (error) {
                 alert('投稿に失敗しました: ' + error.message);
-                console.error(error);
-            } else {
+            } else if (data && data[0]) {
+                saveMyPostId(data[0].id);
                 titleInput.value = '';
                 reasonInput.value = '';
                 fetchHolidays();
             }
         });
+
+        async function deleteMyHoliday(id) {
+            if (!confirm('あなたが投稿したこの祝日を削除してもよろしいですか？')) return;
+            const { error } = await db.from('holidays').update({ status: 'deleted' }).eq('id', id);
+            if (error) {
+                alert('削除に失敗しました: ' + error.message);
+            } else {
+                removeMyPostId(id);
+                fetchHolidays();
+            }
+        }
 
         async function likeHoliday(id, currentLikes) {
             if(!db) return;
@@ -199,7 +210,7 @@
 
         async function reportHoliday(id, currentReports) {
             if(!db) return;
-            if(!confirm('この投稿を通報しますか？（複数回の通報で自動非表示となります）')) return;
+            if(!confirm('この投稿に通報しますか？')) return;
             await db.from('holidays').update({ report_count: currentReports + 1 }).eq('id', id);
             alert('通報を受け付けました');
             fetchHolidays();
