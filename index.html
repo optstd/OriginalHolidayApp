@@ -195,10 +195,7 @@
             <div id="detailModalContent"></div>
             
             <!-- 【アフィリエイト広告枠 C】詳細モーダル内連動広告 -->
-            <div class="bg-slate-50 p-3 rounded-xl border border-slate-200 text-xs">
-                <div class="text-[10px] text-slate-400 font-bold mb-1">PR この休日におすすめのサービス</div>
-                <a href="#" target="_blank" class="text-amber-700 font-bold hover:underline block">👉 関連アクティビティ・プランを検索・予約する</a>
-            </div>
+            <div id="modalAdContainer"></div>
 
             <button onclick="closeDetailModal()" class="w-full bg-amber-500 hover:bg-amber-600 text-white font-bold py-2 rounded-lg text-xs transition">閉じる</button>
         </div>
@@ -214,6 +211,35 @@
         } catch(e) {
             console.error('Supabase Init Error', e);
         }
+        
+        // カテゴリごとの連動アフィリエイト広告コード定義（無改変でHTML出力）
+        const affiliateMap = {
+            "ドライブ・おでかけ": `
+                <p class="text-[10px] font-bold text-amber-800 uppercase tracking-wider mb-1">PR この休日におすすめ</p>
+                <a href="https://px.a8.net/svt/ejp?a8mat=4BAI1N+G3WI0Q+5RZ8+61Z81" rel="nofollow" target="_blank" class="hover:underline font-bold text-slate-800">
+                    【格安レンタカー予約】ドライブの計画はこちらから！
+                </a>
+            `,
+            "映画・エンタメ": `
+                <p class="text-[10px] font-bold text-amber-800 uppercase tracking-wider mb-1">PR この休日におすすめ</p>
+                <a href="https://hb.afl.rakuten.co.jp/hsc/56f76358.69f6b6cf.2baae3db.5ed734a5/?link_type=pict&ut=eyJwYWdlIjoic2hvcCIsInR5cGUiOiJwaWN0IiwiY29sIjoxLCJjYXQiOiI1OCIsImJhbiI6MzIzMDk1MiwiYW1wIjpmYWxzZX0%3D" target="_blank" rel="nofollow sponsored noopener">
+                    <img src="https://hbb.afl.rakuten.co.jp/hsb/56f76358.69f6b6cf.2baae3db.5ed734a5/?me_id=1&me_adv_id=3230952&t=pict" border="0" style="margin:2px; max-width:100%; height:auto;" alt="">
+                </a>
+            `,
+            "リフレッシュ・睡眠": `
+                <p class="text-[10px] font-bold text-amber-800 uppercase tracking-wider mb-1">PR この休日におすすめ</p>
+                <a href="https://hb.afl.rakuten.co.jp/hsc/56f7324a.4beaec63.2baae3db.5ed734a5/?link_type=pict&ut=eyJwYWdlIjoic2hvcCIsInR5cGUiOiJwaWN0IiwiY29sIjoxLCJjYXQiOiIxIiwiYmFuIjoyMTg4NjQ3LCJhbXAiOmZhbHNlfQ%3D%3D" target="_blank" rel="nofollow sponsored noopener">
+                    <img src="https://hbb.afl.rakuten.co.jp/hsb/56f7324a.4beaec63.2baae3db.5ed734a5/?me_id=2100001&me_adv_id=2188647&t=pict" border="0" style="margin:2px; max-width:100%; height:auto;" alt="">
+                </a>
+            `,
+            "default": `
+                <p class="text-[10px] font-bold text-amber-800 uppercase tracking-wider mb-1">PR この休日におすすめ</p>
+                <a href="https://hb.afl.rakuten.co.jp/hsc/56f76358.69f6b6cf.2baae3db.5ed734a5/?link_type=pict&ut=eyJwYWdlIjoic2hvcCIsInR5cGUiOiJwaWN0IiwiY29sIjoxLCJjYXQiOiI1OCIsImJhbiI6MzIzMDk1MiwiYW1wIjpmYWxzZX0%3D" target="_blank" rel="nofollow sponsored noopener">
+                    <img src="https://hbb.afl.rakuten.co.jp/hsb/56f76358.69f6b6cf.2baae3db.5ed734a5/?me_id=1&me_adv_id=3230952&t=pict" border="0" style="margin:2px; max-width:100%; height:auto;" alt="">
+                </a>
+            `
+        };
+        
 
         let currentCalendarDate = new Date();
         let allHolidaysData = [];
@@ -531,6 +557,17 @@
                     </div>
                 </div>
             `;
+            // 【広告枠 C】カテゴリに合わせた広告コードを無改変で注入
+            const category = item.category || "default";
+            const adHtml = affiliateMap[category] || affiliateMap["default"];
+            const modalAdContainer = document.getElementById('modalAdContainer');
+            if (modalAdContainer) {
+                modalAdContainer.innerHTML = `
+                    <div class="bg-slate-50 p-3 rounded-xl border border-slate-200 text-xs text-center">
+                        ${adHtml}
+                    </div>
+                `;
+            }
 
             document.getElementById('detailModal').classList.remove('hidden');
         }
