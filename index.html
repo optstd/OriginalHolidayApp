@@ -113,7 +113,7 @@
                 <p class="text-[10px] font-bold text-amber-800 uppercase tracking-wider mb-2">PR 休日の準備に！</p>
                 <div class="grid grid-cols-1 md:grid-cols-3 gap-3 items-center justify-items-center">
                     <div class="w-full flex justify-center items-center bg-white p-2 rounded-xl border border-amber-200/60 shadow-sm overflow-hidden">
-                        <a href="https://hb.afl.rakuten.co.jp/hsc/56f7324a.4beaec63.2baae3db.5ed734a5/?link_type=pict&ut=eyJwYWdlIjoic2hvcCIsInR5cGUiOiJwaWN0IiwiY29sIjoxLCJjYXQiOiIxIiwidmFuIjoyMTg4NjQ3LCJhbXAiOmZhbHNlfQ%3D%3D" target="_blank" rel="nofollow sponsored noopener" style="word-wrap:break-word;"><img src="https://hbb.afl.rakuten.co.jp/hsb/56f7324a.4beaec63.2baae3db.5ed734a5/?me_id=2100001&me_adv_id=2188647&t=pict" border="0" style="margin:2px" alt="" title=""></a>    
+                        <a href="https://hb.afl.rakuten.co.jp/hsc/56f7324a.4beaec63.2baae3db.5ed734a5/?link_type=pict&ut=eyJwYWdlIjoic2hvcCIsInR5cGUiOiJwaWN0IiwiY29sIjoxLCJjYXQiOiIxIiwiYmFuIjoyMTg4NjQ3LCJhbXAiOmZhbHNlfQ%3D%3D" target="_blank" rel="nofollow sponsored noopener" style="word-wrap:break-word;"><img src="https://hbb.afl.rakuten.co.jp/hsb/56f7324a.4beaec63.2baae3db.5ed734a5/?me_id=2100001&me_adv_id=2188647&t=pict" border="0" style="margin:2px" alt="" title=""></a>    
                     </div>
                     <div class="w-full flex justify-center items-center bg-white p-2 rounded-xl border border-amber-200/60 shadow-sm overflow-hidden">
                         <a href="https://px.a8.net/svt/ejp?a8mat=4BAI1N+G3WI0Q+5RZ8+61Z81" rel="nofollow">
@@ -349,9 +349,9 @@
             }
         
             const myIds = getMyPostIds();
-            const todayStr = new Date().toISOString().split('T')[0];
+            const todayStr = new Date().toISOString().split('T')[0]; // リアルの今日の日付
         
-            // PR広告カード
+            // 💡 フリマアプリ風 PR広告カード（デザインは通常の祝日カードと完全統一）
             const prCardHtml = `
                 <div class="bg-white p-5 rounded-xl shadow-sm border border-slate-100 flex flex-col justify-between space-y-3 relative hover:shadow-md transition">
                     <div>
@@ -360,7 +360,7 @@
                             <span>📅 ${todayStr}</span>
                         </div>
                         <h4 class="font-bold text-slate-800 text-base leading-snug mb-1">
-                            <a href="https://rpx.a8.net/svt/ejp?a8mat=2BNNL9+CI4056+2HOM+BW8O1&rakuten=y&a8ejpredirect=http%3A%2F%2Fhb.afl.rakuten.co.jp%2Fhgc%2F0ea62065.34400275.0ea62066.204f04c0%2Fa14051121861_2BNNL9_CI4056_2HOM_BW8O1%3Fpc%3Dhttps%253A%252F%252Fsearch.rakuten.co.jp%252Fsearch%252Fmall%252F%2525E3%252582%2525AB%2525E3%252583%2525B3%2525E3%252582%2525AB%2525E3%252583%2525BC%252F567216%252F%253Freview%253D4%26m%3Dhttps%253A%252F%252Fsearch.rakuten.co.jp%252Fsearch%252Fmall%252F%2525E3%252582%2525AB%2525E3%252583%2525B3%2525E3%252582%2525AB%2525E3%252583%2525BC%252F567216%252F%253Freview%253D4" 
+                            <a href="https://rpx.a8.net/svt/ejp?a8mat=2BNNL9+CI4056+2HOM+BW8O1&rakuten=y&a8ejpredirect=http%3A%2F%2Fhb.afl.rakuten.co.jp%2Fhgc%2F0ea62065.34400275.0ea62066.204f04c0%2Fa14051121861_2BNNL9_CI4056_2HOM_BW8O1%3Fpc%3Dhttps%253A%252F%252Fsearch.rakuten.co.jp%252Fsearch%252Fmall%252F%2525E3%252582%2525AB%2525E3%252583%2525B3%2525E3%252582%2525AB%2525E3%252583%2525B3%2525E3%252582%2525AB%2525E3%252583%2525BC%252F567216%252F%253Freview%253D4%26m%3Dhttps%253A%252F%252Fsearch.rakuten.co.jp%252Fsearch%252Fmall%252F%2525E3%252582%2525AB%2525E3%252583%2525B3%2525E3%252582%2525AB%2525E3%252583%2525BC%252F567216%252F%253Freview%253D4" 
                                target="_blank" rel="nofollow" class="text-amber-600 hover:underline flex items-center gap-1">
                                 🎁 来年度のカレンダー入手はお早めに！デザイン豊富なカレンダー特集
                             </a>
@@ -370,6 +370,7 @@
                             来年の祝日・休日の計画準備にぴったり！人気の卓上カレンダーや壁掛けカレンダー、お洒落なデザインアイテムを多数ご紹介中。今すぐチェック！
                         </p>
                     </div>
+                    <!-- イイねや通報・SNSボタンは非表示（デザインの底辺高さを揃えるための枠のみ） -->
                     <div class="pt-2 border-t border-slate-50 text-[10px] text-slate-400 text-right">
                         スポンサードリンク
                     </div>
@@ -411,6 +412,7 @@
                 </div>
             `});
         
+            // 3件目の位置（インデックス2）にPRカードを挿入して結合
             if (holidayCardsHtml.length >= 2) {
                 holidayCardsHtml.splice(2, 0, prCardHtml);
             } else {
@@ -430,6 +432,7 @@
                 return;
             }
 
+            // イイね数降順でソート（同じ場合はID新しい順）
             const sorted = [...allHolidaysData].sort((a, b) => (b.like_count || 0) - (a.like_count || 0) || b.id - a.id);
             const top2 = sorted.slice(0, 2);
 
@@ -495,7 +498,7 @@
 
         async function deleteMyHoliday(id) {
             if (!confirm('あなたが投稿したこの祝日を削除してもよろしいですか？')) return;
-            const { error } = await db.from('holidays').delete().eq('id', id);
+            const { error } = await db.from('holidays').update({ status: 'deleted' }).eq('id', id);
             if (error) {
                 alert('削除に失敗しました: ' + error.message);
             } else {
@@ -504,59 +507,135 @@
             }
         }
 
-        async function likeHoliday(id, currentCount) {
+        async function likeHoliday(id, currentLikes) {
+            if(!db) return;
             const likedIds = getLikedHolidayIds();
-            if (likedIds.includes(id)) return;
+            if (likedIds.includes(id)) {
+                alert('この祝日にはすでにイイね！を押しています');
+                return;
+            }
 
-            const { error } = await db.from('holidays').update({ like_count: currentCount + 1 }).eq('id', id);
-            if (error) {
-                console.error(error);
-            } else {
+            const { error } = await db.from('holidays').update({ like_count: currentLikes + 1 }).eq('id', id);
+            if (!error) {
                 saveLikedHolidayId(id);
                 fetchHolidays();
+                
+                // 詳細モーダルが開いている場合は詳細も更新
+                const detailModal = document.getElementById('detailModal');
+                if (!detailModal.classList.contains('hidden')) {
+                    openDetailModal(id);
+                }
             }
         }
 
         async function reportHoliday(id, currentReports) {
-            if (!confirm('この投稿を通報しますか？（一定数の通報で非表示処理が行われます）')) return;
-
-            const newReports = (currentReports || 0) + 1;
-            const updates = { report_count: newReports };
-            if (newReports >= 3) {
-                updates.status = 'hidden';
-            }
-
-            const { error } = await db.from('holidays').update(updates).eq('id', id);
-            if (error) {
-                alert('通報処理に失敗しました');
-            } else {
-                alert('通報を受理しました');
-                fetchHolidays();
-            }
+            if(!db) return;
+            if(!confirm('この投稿に通報しますか？')) return;
+            await db.from('holidays').update({ report_count: currentReports + 1 }).eq('id', id);
+            alert('通報を受け付けました');
+            fetchHolidays();
         }
 
-        // --- カレンダー描画関数 ---
-        function changeMonth(diff) {
-            currentCalendarDate.setMonth(currentCalendarDate.getMonth() + diff);
-            renderCalendar();
+        // --- 詳細表示モーダル ---
+        function openDetailModal(id) {
+            const item = allHolidaysData.find(h => h.id === id);
+            if (!item) return;
+
+            const content = document.getElementById('detailModalContent');
+            const adContainer = document.getElementById('modalAdContainer');
+            const nickname = item.nickname || '名無しの休日びと';
+            const holidayDate = item.holiday_date || item.created_at.split('T')[0];
+
+            content.innerHTML = `
+                <div class="flex items-center justify-between text-xs text-slate-400 mb-2">
+                    <span class="bg-amber-100 text-amber-800 font-semibold px-2.5 py-0.5 rounded">${escapeHtml(item.category)}</span>
+                    <span>📅 ${holidayDate}</span>
+                </div>
+                <h3 class="text-lg font-bold text-slate-800 leading-snug mb-1">🎉 ${escapeHtml(item.title)}</h3>
+                <p class="text-xs text-slate-400 mb-3">制定者: 👤 ${escapeHtml(nickname)}</p>
+                ${item.reason ? `<div class="bg-slate-50 p-3 rounded-lg border border-slate-100 text-xs text-slate-600 leading-relaxed mb-3">${escapeHtml(item.reason)}</div>` : ''}
+                
+                <div class="flex items-center justify-between pt-2 border-t border-slate-100 mb-2">
+                    <span class="text-xs text-slate-500 font-semibold">応援・共感:</span>
+                    ${renderLikeButtonHtml(item.id, item.like_count)}
+                </div>
+            `;
+
+            adContainer.innerHTML = affiliateMap[item.category] || affiliateMap["default"];
+            document.getElementById('detailModal').classList.remove('hidden');
         }
 
-        function renderCalendar() {
-            const container = document.getElementById('calendarContainer');
-            const label = document.getElementById('calendarMonthLabel');
-            if (!container) return;
+        function closeDetailModal() {
+            document.getElementById('detailModal').classList.add('hidden');
+        }
 
-            const year = currentCalendarDate.getFullYear();
-            const month = currentCalendarDate.getMonth();
-            
-            label.textContent = `${year}年 ${month + 1}月`;
+        // 国民の祝日用モーダル
+        function openNationalHolidayModal(dateStr, holidayName) {
+            const content = document.getElementById('detailModalContent');
+            const adContainer = document.getElementById('modalAdContainer');
 
+            content.innerHTML = `
+                <div class="flex items-center gap-2 text-xs text-red-600 font-bold mb-1">
+                    <span class="bg-red-100 px-2 py-0.5 rounded">日本の祝日</span>
+                    <span>📅 ${dateStr}</span>
+                </div>
+                <h3 class="text-lg font-bold text-slate-800 mb-2">🇯🇵 ${escapeHtml(holidayName)}</h3>
+                <p class="text-xs text-slate-600 leading-relaxed mb-4">国民の祝日です。素敵なお休みをお過ごしください！</p>
+            `;
+
+            adContainer.innerHTML = affiliateMap["国民の祝日"] || affiliateMap["default"];
+            document.getElementById('detailModal').classList.remove('hidden');
+        }
+
+        // カレンダー表示生成
+        function buildSingleMonthCalendar(targetDate) {
+            const year = targetDate.getFullYear();
+            const month = targetDate.getMonth();
             const firstDay = new Date(year, month, 1).getDay();
             const lastDate = new Date(year, month + 1, 0).getDate();
 
-            let html = `
-                <div class="w-full">
-                    <div class="grid grid-cols-7 text-center text-xs font-bold text-slate-500 mb-2">
+            let cellsHtml = '';
+
+            for (let i = 0; i < firstDay; i++) {
+                cellsHtml += `<div class="h-16 bg-slate-50/50 rounded"></div>`;
+            }
+
+            for (let day = 1; day <= lastDate; day++) {
+                const monthStr = String(month + 1).padStart(2, '0');
+                const dayStr = String(day).padStart(2, '0');
+                const fullDateKey = `${year}-${monthStr}-${dayStr}`;
+
+                const natHoliday = fetchedNationalHolidays[fullDateKey];
+
+                const origHolidays = allHolidaysData.filter(h => {
+                    const hDate = h.holiday_date || h.created_at.split('T')[0];
+                    return hDate === fullDateKey;
+                });
+
+                cellsHtml += `
+                    <div class="h-16 border border-slate-100 rounded p-1 flex flex-col justify-between items-start text-left bg-white overflow-hidden">
+                        <span class="font-bold text-slate-700 text-[11px]">${day}</span>
+                        <div class="w-full space-y-0.5 overflow-hidden">
+                            ${natHoliday ? `
+                                <div onclick="openNationalHolidayModal('${fullDateKey}', '${escapeHtml(natHoliday)}')" 
+                                     class="bg-red-100 text-red-700 text-[9px] px-1 rounded truncate font-medium cursor-pointer hover:bg-red-200 transition">
+                                    ${escapeHtml(natHoliday)}
+                                </div>
+                            ` : ''}
+                            ${origHolidays.map(oh => `
+                                <div onclick="openDetailModal(${oh.id})" class="bg-amber-100 text-amber-800 text-[9px] px-1 rounded truncate cursor-pointer hover:bg-amber-200 transition">
+                                    🎉 ${escapeHtml(oh.title)}
+                                </div>
+                            `).join('')}
+                        </div>
+                    </div>
+                `;
+            }
+
+            return `
+                <div class="bg-slate-50/50 p-3 rounded-xl border border-slate-100">
+                    <div class="text-center font-bold text-sm text-slate-700 mb-2">${year}年 ${month + 1}月</div>
+                    <div class="grid grid-cols-7 gap-1 text-center text-xs font-bold border-b pb-2 mb-1">
                         <span class="text-red-500">日</span>
                         <span>月</span>
                         <span>火</span>
@@ -566,75 +645,47 @@
                         <span class="text-blue-500">土</span>
                     </div>
                     <div class="grid grid-cols-7 gap-1 text-xs">
-            `;
-
-            for (let i = 0; i < firstDay; i++) {
-                html += `<div class="h-10 bg-slate-50 rounded-lg"></div>`;
-            }
-
-            for (let day = 1; day <= lastDate; day++) {
-                const dateStr = `${year}-${String(month + 1).padStart(2, '0')}-${String(day).padStart(2, '0')}`;
-                
-                const nationalHolidayName = fetchedNationalHolidays[dateStr];
-                const originalHolidays = allHolidaysData.filter(h => h.holiday_date === dateStr);
-
-                let bgClass = "bg-white hover:bg-slate-50 border border-slate-100";
-                if (nationalHolidayName) {
-                    bgClass = "bg-red-50 border border-red-200 text-red-600 font-bold";
-                } else if (originalHolidays.length > 0) {
-                    bgClass = "bg-amber-50 border border-amber-200 text-amber-800 font-bold";
-                }
-
-                html += `
-                    <div class="h-10 ${bgClass} rounded-lg p-1 flex flex-col justify-between cursor-pointer text-center relative overflow-hidden" 
-                         title="${nationalHolidayName || (originalHolidays[0] ? originalHolidays[0].title : '')}"
-                         onclick="handleCalendarDayClick('${dateStr}')">
-                        <span class="text-[10px]">${day}</span>
-                        ${nationalHolidayName ? `<span class="text-[8px] truncate block text-red-500">${escapeHtml(nationalHolidayName)}</span>` : ''}
-                        ${!nationalHolidayName && originalHolidays.length > 0 ? `<span class="text-[8px] truncate block text-amber-600">🎉 ${escapeHtml(originalHolidays[0].title)}</span>` : ''}
+                        ${cellsHtml}
                     </div>
-                `;
-            }
-
-            html += `</div></div>`;
-            container.innerHTML = html;
+                </div>
+            `;
         }
 
-        function handleCalendarDayClick(dateStr) {
-            const found = allHolidaysData.filter(h => h.holiday_date === dateStr);
-            if (found.length > 0) {
-                openDetailModal(found[0].id);
-            } else if (fetchedNationalHolidays[dateStr]) {
-                alert(`${dateStr} は「${fetchedNationalHolidays[dateStr]}」です。`);
+        function renderCalendar() {
+            const isDesktop = window.innerWidth >= 768;
+            const container = document.getElementById('calendarContainer');
+            const nextMonthDate = new Date(currentCalendarDate.getFullYear(), currentCalendarDate.getMonth() + 1, 1);
+
+            if (isDesktop) {
+                document.getElementById('calendarMonthLabel').textContent = 
+                    `${currentCalendarDate.getFullYear()}年${currentCalendarDate.getMonth() + 1}月 〜 ${nextMonthDate.getFullYear()}年${nextMonthDate.getMonth() + 1}月`;
+                container.innerHTML = buildSingleMonthCalendar(currentCalendarDate) + buildSingleMonthCalendar(nextMonthDate);
             } else {
-                dateInput.value = dateStr;
-                window.scrollTo({ top: holidayForm.offsetTop - 80, behavior: 'smooth' });
+                document.getElementById('calendarMonthLabel').textContent = 
+                    `${currentCalendarDate.getFullYear()}年 ${currentCalendarDate.getMonth() + 1}月`;
+                container.innerHTML = buildSingleMonthCalendar(currentCalendarDate);
             }
         }
 
-        // --- モーダル制御 ---
-        function openCompleteModal(holiday) {
+        function changeMonth(offset) {
+            currentCalendarDate.setMonth(currentCalendarDate.getMonth() + offset);
+            renderCalendar();
+        }
+
+        window.addEventListener('resize', renderCalendar);
+
+        function openCompleteModal(item) {
             const card = document.getElementById('modalHolidayCard');
+            const hDate = item.holiday_date || item.created_at.split('T')[0];
             card.innerHTML = `
-                <p class="text-slate-400">📅 ${holiday.holiday_date}</p>
-                <p class="font-bold text-slate-800 text-sm">🎉 ${escapeHtml(holiday.title)}</p>
-                <p class="text-slate-500">🏷️ ${escapeHtml(holiday.category)}</p>
-                ${holiday.reason ? `<p class="text-slate-600 mt-1">${escapeHtml(holiday.reason)}</p>` : ''}
+                <div class="font-bold text-slate-800">🎉 ${escapeHtml(item.title)}</div>
+                <div class="text-slate-500">日付：${hDate}</div>
+                <div class="text-slate-500">カテゴリ：${escapeHtml(item.category)}</div>
             `;
 
-            const shareText = `【新祝日制定】${holiday.holiday_date}は『${holiday.title}』です！ #HOLIDAYBUILDER`;
-            const shareUrl = location.href;
-
-            document.getElementById('modalShareX').onclick = () => {
-                window.open(`https://twitter.com/intent/tweet?text=${encodeURIComponent(shareText)}&url=${encodeURIComponent(shareUrl)}`, '_blank');
-            };
-            document.getElementById('modalShareLINE').onclick = () => {
-                window.open(`https://social-plugins.line.me/lineit/share?url=${encodeURIComponent(shareUrl)}`, '_blank');
-            };
-            document.getElementById('modalCopy').onclick = () => {
-                navigator.clipboard.writeText(`${shareText} ${shareUrl}`);
-                alert('リンクとテキストをコピーしました！');
-            };
+            document.getElementById('modalShareX').onclick = () => shareOnX(item.title);
+            document.getElementById('modalShareLINE').onclick = () => shareOnLINE(item.title);
+            document.getElementById('modalCopy').onclick = () => copyLink();
 
             document.getElementById('completeModal').classList.remove('hidden');
         }
@@ -643,51 +694,31 @@
             document.getElementById('completeModal').classList.add('hidden');
         }
 
-        function openDetailModal(id) {
-            const item = allHolidaysData.find(h => h.id === id);
-            if (!item) return;
-
-            const content = document.getElementById('detailModalContent');
-            const nickname = item.nickname || '名無しの休日びと';
-
-            content.innerHTML = `
-                <div class="text-xs text-amber-600 font-bold bg-amber-100 inline-block px-2 py-0.5 rounded mb-2">${escapeHtml(item.category)}</div>
-                <h3 class="text-lg font-bold text-slate-800 mb-1">🎉 ${escapeHtml(item.title)}</h3>
-                <p class="text-xs text-slate-400 mb-3">📅 ${item.holiday_date} ｜ 👤 ${escapeHtml(nickname)}</p>
-                ${item.reason ? `<p class="text-sm text-slate-600 bg-slate-50 p-3 rounded-lg leading-relaxed mb-4">${escapeHtml(item.reason)}</p>` : ''}
-            `;
-
-            const adContainer = document.getElementById('modalAdContainer');
-            const adHtml = affiliateMap[item.category] || affiliateMap["default"];
-            adContainer.innerHTML = `<div class="p-3 bg-amber-50 rounded-xl border border-amber-200 text-center mb-4">${adHtml}</div>`;
-
-            document.getElementById('detailModal').classList.remove('hidden');
+        function shareOnX(title = '') {
+            const text = title ? `新しい祝日「${title}」を制定しました！` : '自分だけのオリジナル祝日を作ろう！';
+            const url = encodeURIComponent(window.location.href);
+            window.open(`https://twitter.com/intent/tweet?text=${encodeURIComponent(text)}&url=${url}`, '_blank');
         }
 
-        function closeDetailModal() {
-            document.getElementById('detailModal').classList.add('hidden');
-        }
-
-        // --- 全体SNSシェア ---
-        function shareOnX() {
-            const text = "自分だけのオリジナル祝日を作ってシェアしよう！ HOLIDAY BUILDER";
-            window.open(`https://twitter.com/intent/tweet?text=${encodeURIComponent(text)}&url=${encodeURIComponent(location.href)}`, '_blank');
-        }
-
-        function shareOnLINE() {
-            window.open(`https://social-plugins.line.me/lineit/share?url=${encodeURIComponent(location.href)}`, '_blank');
+        function shareOnLINE(title = '') {
+            const text = title ? `新しい祝日「${title}」を制定しました！` : '自分だけのオリジナル祝日を作ろう！';
+            const url = encodeURIComponent(window.location.href);
+            window.open(`https://social-plugins.line.me/lineit/share?url=${url}&text=${encodeURIComponent(text)}`, '_blank');
         }
 
         function copyLink() {
-            navigator.clipboard.writeText(location.href);
-            alert('URLをコピーしました！');
+            navigator.clipboard.writeText(window.location.href).then(() => {
+                alert('URLをコピーしました！');
+            });
         }
 
-        // 初期化実行
-        (async () => {
+        // 初期化処理
+        async function init() {
             await fetchNationalHolidaysAPI();
             await fetchHolidays();
-        })();
+        }
+
+        init();
     </script>
 </body>
 </html>
