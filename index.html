@@ -546,6 +546,9 @@
             const item = allHolidaysData.find(h => h.id === id);
             if (!item) return;
 
+            const myPostIds = JSON.parse(localStorage.getItem('my_post_ids') || '[]');
+            const isMyPost = myPostIds.includes(item.id);
+
             const content = document.getElementById('detailModalContent');
             const adContainer = document.getElementById('modalAdContainer');
             const nickname = item.nickname || '名無しの休日びと';
@@ -563,6 +566,26 @@
                 <div class="flex items-center justify-between pt-2 border-t border-slate-100 mb-2">
                     <span class="text-xs text-slate-500 font-semibold">応援・共感:</span>
                     ${renderLikeButtonHtml(item.id, item.like_count)}
+                </div>
+
+                <div class="pt-3 border-t border-slate-100 mb-2">
+                    <p class="text-[11px] font-bold text-slate-500 mb-2 text-center">この祝日をシェアする</p>
+                    <div class="grid grid-cols-3 gap-2">
+                        <button onclick="shareOnX('${escapeHtml(item.title)}')" class="py-1.5 bg-black text-white rounded-lg text-xs font-bold hover:bg-slate-800 transition flex items-center justify-center gap-1">
+                            <span>𝕏</span> X
+                        </button>
+                        <button onclick="shareOnLINE('${escapeHtml(item.title)}')" class="py-1.5 bg-[#06C755] text-white rounded-lg text-xs font-bold hover:opacity-90 transition flex items-center justify-center gap-1">
+                            <span>💬</span> LINE
+                        </button>
+                        <button onclick="copyLink()" class="py-1.5 bg-slate-100 text-slate-700 rounded-lg text-xs font-bold hover:bg-slate-200 transition flex items-center justify-center gap-1">
+                            🔗 コピー
+                        </button>
+                    </div>
+                </div>
+
+                <div class="flex items-center justify-between text-[11px] text-slate-400 mt-3 pt-2 border-t border-slate-50">
+                    <button onclick="reportHoliday(${item.id}, ${item.report_count || 0})" class="hover:underline">通報する</button>
+                    ${isMyPost ? `<button onclick="deleteMyHoliday(${item.id})" class="text-red-500 hover:underline">この投稿を削除</button>` : ''}
                 </div>
             `;
 
