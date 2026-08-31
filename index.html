@@ -547,4 +547,47 @@
             const item = allHolidaysData.find(h => h.id === id);
             if (!item) return;
 
-            const content = document.getElementById
+            const content = document.getElementById('detailModalContent');
+            const adContainer = document.getElementById('modalAdContainer');
+            const nickname = item.nickname || '名無しの休日びと';
+            const hDate = item.holiday_date || item.created_at.split('T')[0];
+
+            content.innerHTML = `
+                <div class="flex items-center justify-between text-xs text-slate-400 mb-1">
+                    <span class="bg-amber-100 text-amber-800 font-semibold px-2 py-0.5 rounded">${escapeHtml(item.category)}</span>
+                    <span>📅 ${hDate}</span>
+                </div>
+                <h3 class="text-lg font-bold text-slate-800 mb-1">🎉 ${escapeHtml(item.title)}</h3>
+                <p class="text-xs text-slate-400 mb-3">👤 ${escapeHtml(nickname)}</p>
+                ${item.reason ? `<p class="text-xs text-slate-600 leading-relaxed bg-slate-50 p-3 rounded-lg">${escapeHtml(item.reason)}</p>` : ''}
+            `;
+
+            adContainer.innerHTML = affiliateMap[item.category] || affiliateMap["default"];
+            document.getElementById('detailModal').classList.remove('hidden');
+        }
+
+        function closeDetailModal() {
+            document.getElementById('detailModal').classList.add('hidden');
+        }
+
+        function shareOnX() {
+            const shareText = `【HOLIDAY BUILDER】みんなでオリジナルの祝日を作って有休を楽しもう！🎉 #HOLIDAYBUILDER `;
+            window.open(`https://twitter.com/intent/tweet?text=${encodeURIComponent(shareText)}&url=${encodeURIComponent(window.location.href)}`, '_blank');
+        }
+
+        function shareOnLINE() {
+            window.open(`https://social-plugins.line.me/lineit/share?url=${encodeURIComponent(window.location.href)}`, '_blank');
+        }
+
+        function copyLink() {
+            navigator.clipboard.writeText(window.location.href);
+            alert("URLをコピーしました！");
+        }
+
+        window.addEventListener('DOMContentLoaded', async () => {
+            await fetchNationalHolidaysAPI();
+            await fetchHolidays();
+        });
+    </script>
+</body>
+</html>
