@@ -38,23 +38,24 @@
                         <div class="md:col-span-2">
                             <label class="block text-xs font-bold text-slate-600 mb-1">祝日の名前 <span class="text-red-500">*</span></label>
                             <input type="text" id="titleInput" required placeholder="例：愛車で紅葉ドライブ感謝の日 / 新作映画公開初日記念日" 
-                                   class="w-full p-3 border border-slate-300 rounded-lg text-sm focus:ring-2 focus:ring-amber-400 focus:outline-none">
+                                   class="w-full box-border p-3 border border-slate-300 rounded-lg text-sm focus:ring-2 focus:ring-amber-400 focus:outline-none">
                         </div>
                         <div>
-                            <label class="block text-xs font-bold text-slate-600 mb-1">ニックネーム（任意）</label>
+                            <label class="block text-xs font-semibold text-slate-600 mb-1">ニックネーム（任意）</label>
                             <input type="text" id="nicknameInput" placeholder="例：名無しの休日びと" 
-                                   class="w-full p-3 border border-slate-300 rounded-lg text-sm focus:ring-2 focus:ring-amber-400 focus:outline-none">
+                                   class="w-full box-border p-3 border border-slate-300 rounded-lg text-sm focus:ring-2 focus:ring-amber-400 focus:outline-none">
                         </div>
                     </div>
                     <div class="grid grid-cols-1 md:grid-cols-3 gap-4">
                         <div>
-                            <label class="block text-xs font-bold text-slate-600 mb-1">祝日の日付 <span class="text-red-400">*</span></label>
+                            <label class="block text-xs font-bold text-slate-600 mb-1">祝日の日付 <span class="text-red-500">*</span></label>
+                            <!-- box-border, max-w-full, appearance-none を追加してスマホでの右はみ出しを防止 -->
                             <input type="date" id="dateInput" required 
-                                   class="w-full p-3 border border-slate-300 rounded-lg text-sm bg-white focus:ring-2 focus:ring-amber-400 focus:outline-none">
+                                   class="w-full max-w-full box-border p-3 border border-slate-300 rounded-lg text-sm bg-white appearance-none focus:ring-2 focus:ring-amber-400 focus:outline-none">
                         </div>
                         <div>
                             <label class="block text-xs font-bold text-slate-600 mb-1">カテゴリ</label>
-                            <select id="categoryInput" class="w-full p-3 border border-slate-300 rounded-lg text-sm bg-white">
+                            <select id="categoryInput" class="w-full box-border p-3 border border-slate-300 rounded-lg text-sm bg-white focus:ring-2 focus:ring-amber-400 focus:outline-none">
                                 <option value="ドライブ・おでかけ">🚗 ドライブ・おでかけ</option>
                                 <option value="映画・エンタメ">🎬 映画・エンタメ</option>
                                 <option value="リフレッシュ・睡眠">♨️ リフレッシュ・睡眠</option>
@@ -66,7 +67,7 @@
                         <div>
                             <label class="block text-xs font-bold text-slate-600 mb-1">休む理由・過ごし方の詳細（任意）</label>
                             <input type="text" id="reasonInput" placeholder="例：混雑を避けて平日にのんびりドライブに行きます！" 
-                                   class="w-full p-3 border border-slate-300 rounded-lg text-sm focus:ring-2 focus:ring-amber-400 focus:outline-none">
+                                   class="w-full box-border p-3 border border-slate-300 rounded-lg text-sm focus:ring-2 focus:ring-amber-400 focus:outline-none">
                         </div>
                     </div>
                     <div id="errorMessage" class="text-red-500 text-xs font-bold hidden"></div>
