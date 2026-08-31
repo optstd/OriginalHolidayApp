@@ -1,0 +1,81 @@
+<!DOCTYPE html>
+<html lang="ja">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title id="pageTitle">利用規約・免責事項</title>
+    <script src="https://cdn.tailwindcss.com"></script>
+</head>
+<body class="bg-slate-100 text-slate-800 min-h-screen py-10 px-4">
+
+    <div class="max-w-2xl mx-auto bg-white p-6 md:p-10 rounded-2xl shadow-sm border border-slate-200">
+        <h1 class="text-2xl font-bold text-slate-800 mb-6 border-b pb-3">利用規約・免責事項</h1>
+
+        <div class="space-y-6 text-sm text-slate-600 leading-relaxed">
+            <p>
+                本利用規約（以下「本規約」）は、「<span class="appNameText"></span>」（以下「本サービス」）の利用条件を定めるものです。ユーザーの皆様には、本規約に同意の上、本サービスをご利用いただきます。
+            </p>
+
+            <section class="space-y-2">
+                <h2 class="text-base font-bold text-slate-800">1. 免責事項（重要）</h2>
+                <ul class="list-disc list-inside space-y-1 pl-2">
+                    <li>本サービスは現状有姿で提供されるものであり、運営者はその正確性、完全性、有用性、安全性等についていかなる保証も行いません。</li>
+                    <li>本サービスの利用、または利用不能により生じた損害やトラブル（投稿データの消失、システムエラー、第三者との摩擦等）について、運営者は一切の責任を負いません。</li>
+                    <li>本サービスは事前の予告なく、サービス内容の変更、一時停止、または提供を終了することがあります。これにより生じた損害についても一切の責任を負いません。</li>
+                </ul>
+            </section>
+
+            <section class="space-y-2">
+                <h2 class="text-base font-bold text-slate-800">2. 禁止事項</h2>
+                <p>ユーザーは、本サービスの利用にあたり以下の行為を行ってはなりません。</p>
+                <ul class="list-disc list-inside space-y-1 pl-2">
+                    <li>他者に対する不快感を与える表現、誹謗中傷、差別的表現の投稿</li>
+                    <li>公序良俗に反する内容、または犯罪行為に関連する投稿</li>
+                    <li>第三者の著作権、プライバシー権、その他の権利を侵害する投稿</li>
+                    <li>スパム行為、連続投稿、またはサーバー・システムに過度な負荷をかける行為</li>
+                    <li>その他、運営者が不適切と判断する行為</li>
+                </ul>
+            </section>
+
+            <section class="space-y-2">
+                <h2 class="text-base font-bold text-slate-800">3. 投稿データの取扱い</h2>
+                <ul class="list-disc list-inside space-y-1 pl-2">
+                    <li>ユーザーが投稿した祝日データ（タイトル、理由、カテゴリ、ニックネーム等）の著作権は投稿者に帰属します。ただし、運営者は本サービスの提供、宣伝、SNS等へのシェアを目的として、当該投稿データを無償で利用できるものとします。</li>
+                    <li>禁止事項に該当する投稿、または運営者が不適切と判断した投稿は、投稿者への事前通知なく削除・修正する場合があります。</li>
+                </ul>
+            </section>
+
+            <section class="space-y-2">
+                <h2 class="text-base font-bold text-slate-800">4. 広告配信・アクセス解析について</h2>
+                <p>
+                    本サービスでは、第三者配信の広告サービスやアクセス解析ツール（Google アナリティクス等）を使用する場合があります。これらはデータの収集のためにクッキー（Cookie）を使用することがあります。
+                </p>
+            </section>
+
+            <section class="space-y-2">
+                <h2 class="text-base font-bold text-slate-800">5. 規約の変更</h2>
+                <p>
+                    運営者は、必要と判断した場合には、ユーザーへの事前通知なく本規約を変更することができるものとします。変更後の利用規約は、本ページに掲載された時点で効力を生じるものとします。
+                </p>
+            </section>
+
+            <div class="pt-6 border-t border-slate-100 flex justify-between items-center text-xs text-slate-400">
+                <span>制定日：2026年8月31日</span>
+                <a href="index.html" class="text-amber-600 hover:underline font-bold">← カレンダーに戻る</a>
+            </div>
+        </div>
+    </div>
+
+    <script>
+        // サービス名変数
+        const APP_NAME = 'HOLIDAY BUILDER';
+
+        document.addEventListener('DOMContentLoaded', () => {
+            document.title = `利用規約・免責事項 | ${APP_NAME}`;
+            document.querySelectorAll('.appNameText').forEach(el => {
+                el.textContent = APP_NAME;
+            });
+        });
+    </script>
+</body>
+</html>
