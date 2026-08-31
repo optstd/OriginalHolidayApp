@@ -723,13 +723,13 @@
         }
 
         function shareOnX(title = '') {
-            const text = title ? `新しい祝日「${title}」を制定しました！` : '自分だけのオリジナル祝日を作ろう！';
+            const text = title ? `新しいオリジナル祝日「${title}」を提案しました！` : '自分だけのオリジナル祝日を作ろう！\nHOLODAY BUILDER';
             const url = encodeURIComponent(window.location.href);
             window.open(`https://twitter.com/intent/tweet?text=${encodeURIComponent(text)}&url=${url}`, '_blank');
         }
 
         function shareOnLINE(title = '') {
-            const text = title ? `新しい祝日「${title}」を制定しました！` : '自分だけのオリジナル祝日を作ろう！';
+            const text = title ? `新しいオリジナル祝日「${title}」を提案しました！` : '自分だけのオリジナル祝日を作ろう！\nHOLODAY BUILDER';
             const url = encodeURIComponent(window.location.href);
             window.open(`https://social-plugins.line.me/lineit/share?url=${url}&text=${encodeURIComponent(text)}`, '_blank');
         }
