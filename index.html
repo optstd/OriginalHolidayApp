@@ -319,6 +319,7 @@
             }
         }
 
+        // --- みんなが作った祝日一覧の描画（PRカード挿入 ＆ 最大20件制限） ---
         async function fetchHolidays() {
             if (!db) return;
             const { data, error } = await db
@@ -326,31 +327,62 @@
                 .select('*')
                 .eq('status', 'active')
                 .order('id', { ascending: false });
-
+        
             if (error) {
                 console.error(error);
                 holidayList.innerHTML = '<div class="col-span-full text-center text-red-500 py-4">データの読み込みに失敗しました</div>';
                 return;
             }
-
+        
             allHolidaysData = data;
-            holidayCount.textContent = `${data.length}件`;
-
+        
+            // 表示する祝日データを最大20件に制限
+            const displayData = data.slice(0, 20);
+            holidayCount.textContent = `${displayData.length}件`;
+        
             renderCalendar();
             renderTopRankedHolidays();
-
-            if (data.length === 0) {
+        
+            if (displayData.length === 0) {
                 holidayList.innerHTML = '<div class="col-span-full text-center py-12 text-slate-400 text-sm">まだ祝日がありません。最初の祝日を作ってみましょう！</div>';
                 return;
             }
-
+        
             const myIds = getMyPostIds();
-
-            holidayList.innerHTML = data.map(item => {
+            const todayStr = new Date().toISOString().split('T')[0]; // リアルの今日の日付
+        
+            // 💡 フリマアプリ風 PR広告カード（デザインは通常の祝日カードと完全統一）
+            const prCardHtml = `
+                <div class="bg-white p-5 rounded-xl shadow-sm border border-slate-100 flex flex-col justify-between space-y-3 relative hover:shadow-md transition">
+                    <div>
+                        <div class="flex items-center justify-between text-xs text-slate-400 mb-1">
+                            <span class="bg-amber-500 text-white font-bold px-2 py-0.5 rounded">PR</span>
+                            <span>📅 ${todayStr}</span>
+                        </div>
+                        <h4 class="font-bold text-slate-800 text-base leading-snug mb-1">
+                            <a href="https://rpx.a8.net/svt/ejp?a8mat=2BNNL9+CI4056+2HOM+BW8O1&rakuten=y&a8ejpredirect=http%3A%2F%2Fhb.afl.rakuten.co.jp%2Fhgc%2F0ea62065.34400275.0ea62066.204f04c0%2Fa14051121861_2BNNL9_CI4056_2HOM_BW8O1%3Fpc%3Dhttps%253A%252F%252Fsearch.rakuten.co.jp%252Fsearch%252Fmall%252F%2525E3%252582%2525AB%2525E3%252583%2525B3%2525E3%252582%2525AB%2525E3%252583%2525B3%2525E3%252582%2525AB%2525E3%252583%2525BC%252F567216%252F%253Freview%253D4%26m%3Dhttps%253A%252F%252Fsearch.rakuten.co.jp%252Fsearch%252Fmall%252F%2525E3%252582%2525AB%2525E3%252583%2525B3%2525E3%252582%2525AB%2525E3%252583%2525BC%252F567216%252F%253Freview%253D4" 
+                               target="_blank" rel="nofollow" class="text-amber-600 hover:underline flex items-center gap-1">
+                                🎁 来年度のカレンダー入手はお早めに！デザイン豊富なカレンダー特集
+                            </a>
+                        </h4>
+                        <p class="text-[11px] text-slate-400 mb-2">👤 スポンサー広告</p>
+                        <p class="text-xs text-slate-600 leading-relaxed">
+                            来年の祝日・休日の計画準備にぴったり！人気の卓上カレンダーや壁掛けカレンダー、お洒落なデザインアイテムを多数ご紹介中。今すぐチェック！
+                        </p>
+                    </div>
+                    <!-- イイねや通報・SNSボタンは非表示（デザインの底辺高さを揃えるための枠のみ） -->
+                    <div class="pt-2 border-t border-slate-50 text-[10px] text-slate-400 text-right">
+                        スポンサードリンク
+                    </div>
+                </div>
+            `;
+        
+            // 一般の祝日カード群の生成
+            const holidayCardsHtml = displayData.map(item => {
                 const isMyPost = myIds.includes(item.id);
                 const nickname = item.nickname || '名無しの休日びと';
                 const holidayDate = item.holiday_date || item.created_at.split('T')[0];
-
+        
                 return `
                 <div class="bg-white p-5 rounded-xl shadow-sm border border-slate-100 flex flex-col justify-between space-y-3 relative hover:shadow-md transition">
                     <div class="cursor-pointer" onclick="openDetailModal(${item.id})">
@@ -362,7 +394,7 @@
                         <p class="text-[11px] text-slate-400 mb-2">👤 ${escapeHtml(nickname)}</p>
                         ${item.reason ? `<p class="text-xs text-slate-600 leading-relaxed">${escapeHtml(item.reason)}</p>` : ''}
                     </div>
-
+        
                     <div class="flex items-center justify-between pt-2 border-t border-slate-50">
                         ${renderLikeButtonHtml(item.id, item.like_count)}
                         
@@ -378,7 +410,16 @@
                         </div>
                     </div>
                 </div>
-            `}).join('');
+            `});
+        
+            // 3件目の位置（インデックス2）にPRカードを挿入して結合
+            if (holidayCardsHtml.length >= 2) {
+                holidayCardsHtml.splice(2, 0, prCardHtml);
+            } else {
+                holidayCardsHtml.push(prCardHtml);
+            }
+        
+            holidayList.innerHTML = holidayCardsHtml.join('');
         }
 
         // --- 人気TOP2祝日のレンダリング ---
